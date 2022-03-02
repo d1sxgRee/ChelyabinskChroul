@@ -11,6 +11,10 @@ class Coords
 public:
     double x;
     double y;
+    // операторы арефметических действий
+    Coords operator+ (const Coords& r);
+    Coords operator- (const Coords& r);
+    // операторы сравнения
     inline bool operator==(const Coords& r);
     // пока что будут заглушки
     inline bool operator< (const Coords& r) = delete;
@@ -19,22 +23,22 @@ public:
     inline bool operator>=(const Coords& r) = delete;
 };
 
-Coords vec_difference(Coords c1, Coords c2)
-{
-    Coords c = {c1.x - c2.x, c1.y - c2.y};
-    return c;
-}
-
-Coords vec_sum(Coords c1, Coords c2)
-{
-    Coords c = {c1.x + c2.x, c1.y + c2.y};
-    return c;
-}
-
 double distance(Coords c1, Coords c2)
 {
     double d = sqrt(pow(c1.x - c2.x, 2.0) + pow(c1.y - c2.y, 2.0));
     return d;
+}
+
+Coords Coords::operator- (const Coords& r)
+{
+    Coords c = {x - r.x, y - r.y};
+    return c;
+}
+
+Coords Coords::operator+ (const Coords& r)
+{
+    Coords c = {x + r.x, y + r.y};
+    return c;
 }
 
 inline bool Coords::operator==(const Coords& r)
