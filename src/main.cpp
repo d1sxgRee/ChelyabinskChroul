@@ -1,5 +1,5 @@
 #include "Animation.hpp"
-
+//привет
 int main(void)
 {
     txCreateWindow(1500,800);
