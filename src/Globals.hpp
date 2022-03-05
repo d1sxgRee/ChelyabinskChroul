@@ -1,0 +1,11 @@
+#ifndef __GLOBALS_H__
+#define __GLOBALS_H__
+
+const int RKEY = int('D');                             /*The button responsible for moving to the right*/
+const int LKEY = int('A');                             /*the button responsible for moving to the left*/
+
+const unsigned short WindowX = 1500;                /*Window OX axis length*/
+const unsigned short WindowY = 700;                 /*Window OY axis length*/
+const unsigned short WindowR = WindowX / WindowY;   /*Window OX / OY lengths ratio*/
+
+#endif //__GLOBALS_H__
