@@ -1,6 +1,8 @@
 #ifndef __GLOBALS_H__
 #define __GLOBALS_H__
 
+const double gravity = 9.81;
+
 const int RKEY = int('D');                             /*The button responsible for moving to the right*/
 const int LKEY = int('A');                             /*the button responsible for moving to the left*/
 

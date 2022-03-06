@@ -6,6 +6,7 @@
 #include "AABB.hpp"
 #include "Animation.hpp"
 #include "Data.hpp"
+#include "Level.hpp"
 #include <map>
 
 class Creature
@@ -20,6 +21,7 @@ public:
     void addAnimation(std::string name, Animation animation);
     void moveRight();
     void moveLeft();
+    void jump();
     void keys_interaction(int rkey, int lkey);
     Coords getCoords();
     Data getData();
@@ -48,28 +50,9 @@ void Creature::moveLeft()
     data.set_velocity(std::abs(data.get_velocity()) + std::abs(data.get_acceleration()));
 }
 
-void Creature::keys_interaction(int rkey, int lkey)
+void Creature::jump(Level level)
 {
-    if(GetAsyncKeyState(rkey))
-    {
-        for(auto el: animations)
-        {
-            if(el.first == "moveRight" || el.first == "moveright" ||
-            el.first == "MoveRight", el.first == "Moveright")
-                el.second.update(coords.x, coords.y);
-        }
-        moveRight();
-    }
-    else if(GetAsyncKeyState(lkey))
-    {
-        for(auto el: animations)
-        {
-            if(el.first == "moveLeft" || el.first == "moveleft" ||
-            el.first == "MoveLeft", el.first == "Moveleft")
-                el.second.update(coords.x, coords.y);
-        }
-        moveLeft();
-    }
+    /*Please create creature jump!*/
 }
 
 Coords Creature::getCoords() { return coords; }

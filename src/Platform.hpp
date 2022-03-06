@@ -11,8 +11,7 @@ private:
     HDC sprite;
 public:
     // всякие конструкторы, деструкторы и прочая шелуха
-    Platform(AABB _fixture, HDC _sprite):
-        fixture(_fixture), sprite(_sprite) {};
+    Platform(AABB _fixture, HDC _sprite);
     ~Platform();
     Platform(const Platform& r);
     // этот вроде бы не нужный
@@ -20,6 +19,18 @@ public:
     // нормальные мужыцкие методы для мужиков
     inline AABB getFixture() { return fixture; };
 };
+
+Platform::Platform(AABB _fixture, HDC _sprite) :
+    fixture(_fixture), sprite(_sprite)
+{
+    assert(sprite != nullptr);
+}
+
+Platform::Platform(const Platform& r) :
+    fixture(r.fixture), sprite(txCreateCompatibleDC(a.endX, a.height))
+{
+    txBitBlt(sprite, 0, 0, 0, 0, r.sprite);
+}
 
 Platform::~Platform()
 {
