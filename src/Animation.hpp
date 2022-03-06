@@ -42,9 +42,10 @@ Animation::Animation(double _x, double _y, double _width, double _height, double
 
 Animation::Animation(const Animation& a) :
     sprite_x(a.sprite_x), sprite_y(a.sprite_y), width(a.width), height(a.height), scaleX(a.scaleX),
-    scaleY(a.scaleY), endX(a.endX),loop_x(a.loop_x), color(a.color)
+    scaleY(a.scaleY), endX(a.endX),loop_x(a.loop_x),
+    image(txCreateCompatibleDC(a.endX, a.height)), color(a.color)
 {
-    image = txCreateCompatibleDC(a.endX, a.height);
+    // пришлось перенести наверх, чтобы варнингов не было((
     txBitBlt(image, 0, 0, 0, 0, a.image);
 }
 
