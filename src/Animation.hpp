@@ -1,7 +1,7 @@
 #ifndef __ANIMATION_HPP__
 #define __ANIMATION_HPP__
 
-#include <TXLib.h>
+#include "TXLib.h"
 
 const int start_x = 1;
 
@@ -45,7 +45,7 @@ Animation::Animation(const Animation& a) :
     scaleY(a.scaleY), endX(a.endX),loop_x(a.loop_x), color(a.color)
 {
     image = txCreateCompatibleDC(a.endX, a.height);
-    txBitBit(image, 0, 0, 0, 0, a.image);
+    txBitBlt(image, 0, 0, 0, 0, a.image);
 }
 
 Animation::~Animation() { txDeleteDC(image); }
