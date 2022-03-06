@@ -1,13 +1,10 @@
-//всем привет
-/* êëàññ êîòîðûé çíàåò ïðî ñïðàéòøèò è ðàçìåð îäíîãî ñïðàéòà...
-    ïðîõîäèòñÿ è ðèñóåò
-    â ïðèíöèïå âñå
-*/
 #ifndef __ANIMATION_HPP__
 #define __ANIMATION_HPP__
+
 #include <TXLib.h>
 
 const int start_x = 1;
+
 class Animation
 {
 private:
@@ -36,11 +33,11 @@ Animation::Animation(double _x, double _y, double _width, double _height, double
     sprite_x(_x), sprite_y(_y), width(_width), height(_height), scaleX(_scaleX), scaleY(_scaleY), endX(_endX), loop_x(_loop_x),
     image(_image), color(_color)
 {
-    if(image==nullptr)
-    {
-        txMessageBox("Íå íàéäåí ôàéë ñî ñïðàéòîì", "Îøèáêà");
-        exit(0);
-    }
+    assert(image != nullptr);
+    assert(width >= 0);
+    assert(height >= 0);
+    assert((loop_x >= 0) && (loop_x <= endX));
+
 }
 
 Animation::Animation(const Animation& a) :
@@ -63,7 +60,7 @@ void Animation::draw(double x, double y)
 void Animation::update(double screen_x, double screen_y)
 {
     draw(screen_x, screen_y);
-    sprite_x+= width;
+    sprite_x += width;
     if(sprite_x > endX-width)
     {
         sprite_x = loop_x;
@@ -72,12 +69,12 @@ void Animation::update(double screen_x, double screen_y)
 
 void Animation::setY(double y)
 {
-    sprite_y=y;
+    sprite_y = y;
 }
 
 void Animation::set_default_position()
 {
-    sprite_x = 0;
+    sprite_x = start_x;
 }
 
 #endif //__ANIMATION_H__
