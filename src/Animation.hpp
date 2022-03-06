@@ -1,5 +1,5 @@
-#ifndef __ANIMATION_HPP__
-#define __ANIMATION_HPP__
+#ifndef __ANIMATION_H__
+#define __ANIMATION_H__
 
 #include "TXLib.h"
 
@@ -23,6 +23,8 @@ public:
     Animation(const Animation& a);
     Animation& operator= (const Animation& a) = default;
     ~Animation();
+    double getSizeX();
+    double getSizeY();
     void draw(double x,double y);
     void update(double x, double y);
     void setY(double y);
@@ -50,6 +52,10 @@ Animation::Animation(const Animation& a) :
 }
 
 Animation::~Animation() { txDeleteDC(image); }
+
+double Animation::getSizeX() { return width * scaleX; }
+
+double Animation::getSizeY() { return height * scaleY; }
 
 void Animation::draw(double x, double y)
 {

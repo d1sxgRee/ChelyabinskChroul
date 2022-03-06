@@ -16,6 +16,13 @@ public:
         creatures(), hero(_hero), platforms() {}
     void addPlatform(Platform p);
     void addCreature(Creature c);
+    std::vector < Platform > getPlatforms();
 };
+
+void Creature::addPlatform(Platform p) { platforms.push_back(p); }
+
+void Creature::addCreature(Creature c) { creatures.push_back(c); }
+
+std::vector < Platform > getPlatforms() { return platforms; }
 
 #endif

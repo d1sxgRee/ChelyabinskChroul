@@ -1,5 +1,5 @@
-#ifndef __BLOCKS_HPP__
-#define __BLOCKS_HPP__
+#ifndef __BLOCKS_H__
+#define __BLOCKS_H__
 
 #include "TXLib.h"
 #include <cassert>
@@ -18,6 +18,7 @@ private:
 public:
     // constructor
     Blocks( double, double, double, double, double, HDC, double, double );
+    Blocks(const Blocks& r);
     // destructor
     ~Blocks();
     // drawing
@@ -33,6 +34,14 @@ Blocks::Blocks( double _paint_y, double _size_x, double _size_y, double _width, 
     assert(height >= 0);
 }
 
+Blocks::Blocks(const Blocks& r) :
+    paint_y(r.paint_y), size_x(r.size_x), size_y(r.size_y), width(r.width),
+    height(r.height), background_image(txCreateCompatibleDC(r.width, r.height)),
+    x_screen(r.x_screen), y_screen(r.y_screen)
+{
+    txBitBlt(background_image, 0, 0, 0, 0, r.background_image);
+}
+
 Blocks::~Blocks()
 {
     txDeleteDC(background_image);
@@ -45,4 +54,4 @@ void Blocks::background_draw(int i)
     static_cast<int>(size_x), static_cast<int>(size_y), background_image, static_cast<int>(i * size_x),
     static_cast<int>(paint_y), static_cast<int>(width), static_cast<int>(height), TX_BLACK);
 }
-#endif //__BLOCKS_HPP__
+#endif //__BLOCKS_H__
