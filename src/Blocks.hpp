@@ -18,6 +18,8 @@ private:
 public:
     // constructor
     Blocks( double, double, double, double, double, HDC, double, double );
+    // destructor
+    ~Blocks();
     // drawing
     void background_draw(int);
 };
@@ -29,6 +31,11 @@ Blocks::Blocks( double _paint_y, double _size_x, double _size_y, double _width, 
     assert(size_y >= 0);
     assert(width >= 0);
     assert(height >= 0);
+}
+
+Blocks::~Blocks()
+{
+    txDeleteDC(background_image);
 }
 
 void Blocks::background_draw(int i)
