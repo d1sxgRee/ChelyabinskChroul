@@ -39,15 +39,13 @@ void Creature::addAnimation(std::string name, Animation animation)
 
 void Creature::moveRight()
 {
-    coords.x += std::abs(data.get_velocity());
-    coords.y += std::abs(data.get_velocity()) / WindowR;
-    data.set_velocity(std::abs(data.get_velocity()) + std::abs(data.get_acceleration()));
+    coords.x += std::abs(data.get_velocity_x());
+    data.set_velocity_x(std::abs(data.get_velocity_x()) + std::abs(data.get_acceleration()));
 }
 void Creature::moveLeft()
 {
-    coords.x -= std::abs(data.get_velocity());
-    coords.y -= std::abs(data.get_velocity()) / WindowR;
-    data.set_velocity(std::abs(data.get_velocity()) + std::abs(data.get_acceleration()));
+    coords.x -= std::abs(data.get_velocity_x());
+    data.set_velocity_x(std::abs(data.get_velocity_x()) + std::abs(data.get_acceleration()));
 }
 
 void Creature::jump(Level level)
