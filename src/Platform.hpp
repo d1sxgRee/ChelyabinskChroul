@@ -26,12 +26,6 @@ Platform::Platform(AABB _fixture, HDC _sprite) :
     assert(sprite != nullptr);
 }
 
-Platform::Platform(const Platform& r) :
-    fixture(r.fixture), sprite(txCreateCompatibleDC(a.endX, a.height))
-{
-    txBitBlt(sprite, 0, 0, 0, 0, r.sprite);
-}
-
 Platform::~Platform()
 {
     txDeleteDC(sprite);
