@@ -14,9 +14,10 @@ class Creature
 private:
     Coords coords;
     Data data;
+    AABB fixture
     std::map < std::string, Animation > animations;
 public:
-    Creature(Coords _coords, Data _data, std::map < std::string, Animation > _animations);
+    Creature(Coords _coords, Data _data, AABB _fixture, std::map < std::string, Animation > _animations);
 
     void addAnimation(std::string name, Animation animation);
     void moveRight();
@@ -25,10 +26,11 @@ public:
     void keys_interaction(int rkey, int lkey);
     Coords getCoords();
     Data getData();
+    AABB get_fixture();
 };
 
-Creature::Creature(Coords _coords, Data _data, std::map < std::string, Animation > _animations) :
-    coords(_coords), data(_data), animations(_animations) {}
+Creature::Creature(Coords _coords, Data _data, AABB _fixture, std::map < std::string, Animation > _animations) :
+    coords(_coords), data(_data), fixture(_fixture), animations(_animations) {}
 
 void Creature::addAnimation(std::string name, Animation animation)
 {
@@ -55,5 +57,6 @@ void Creature::jump(Level level)
 
 Coords Creature::getCoords() { return coords; }
 Data Creature::getData() { return data; }
+AABB Creature::get_fixture() { return fixture; }
 
 #endif //__CREATURE_H__
