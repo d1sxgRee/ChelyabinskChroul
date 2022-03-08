@@ -14,7 +14,7 @@ class Creature
 private:
     Coords coords;
     Data data;
-    AABB fixture
+    AABB fixture;
     std::map < std::string, Animation > animations;
 public:
     Creature(Coords _coords, Data _data, AABB _fixture, std::map < std::string, Animation > _animations);
