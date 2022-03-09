@@ -17,8 +17,7 @@ public:
     // этот вроде бы не нужный
     Platform& operator= (const Platform& r) = delete;
     // нормальные мужыцкие методы для мужиков
-    bool collideWithPlatform(const Creature& cr);
-    inline AABB getFixture() { return fixture; };
+    inline AABB get_fixture() { return fixture; };
 };
 
 Platform::Platform(AABB _fixture, HDC _sprite) :
@@ -43,13 +42,5 @@ Platform::Platform(const Platform& r) :
     txBitBlt(sprite, 0, 0, 0, 0, r.sprite);
 }
 
-bool Platform::collideWithPlatform(const Creature& cr) :
-{
-    if(cr.getData().get_velocity_y() > 0)
-        return false;
-    if(fixture.minimum.y > cr.get_fixture().maximum.y || fixture.minimum.x > cr.get_fixture().maximum.x || fixture.maximum.x < cr.get_fixture().minimum.x)
-        return false;
-    return true;
-}
 
 #endif // __PLATFORM_H__
