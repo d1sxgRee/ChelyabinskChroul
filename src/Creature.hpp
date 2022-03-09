@@ -63,11 +63,7 @@ bool Creature::collideWithPlatform(const Platform& pl) :
 {
     if(getData().get_velocity_y() > 0)
         return false;
-    if(fixture.maximum.y < pl.get_fixture().minimum.y || fixture.maximum.y > pl.get_fixture().maximum.y)
-        return false;
-    if(fixture.minimum.x > pl.get_fixture().maximum.x || fixture.maximum.x < pl.get_fixture().minimum.x)
-        return false;
-    return true;
+    return fixture.colliedWithFixture(pl.get_fixture());
 }
 
 Coords Creature::getCoords() { return coords; }
