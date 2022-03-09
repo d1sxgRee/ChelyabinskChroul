@@ -31,7 +31,7 @@ public:
 };
 
 Creature::Creature(Coords _coords, Data _data, std::map < std::string, Animation > _animations) :
-    coords(_coords), data(_data), fixture(_fixture), animations(_animations)
+    coords(_coords), data(_data), animations(_animations)
     {
         AABB fixture(coords, coords.x + getSizeX(), coords.y + getSizeY());
     }
