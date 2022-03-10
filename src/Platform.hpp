@@ -2,7 +2,7 @@
 #define __PLATFORM_H__
 
 #include "TXLib.h"
-#include "Coords.hpp"
+#include "Creature.hpp"
 
 class Platform
 {
@@ -17,7 +17,7 @@ public:
     // этот вроде бы не нужный
     Platform& operator= (const Platform& r) = delete;
     // нормальные мужыцкие методы для мужиков
-    inline AABB getFixture() { return fixture; };
+    inline AABB get_fixture() { return fixture; };
 };
 
 Platform::Platform(AABB _fixture, HDC _sprite) :
@@ -35,11 +35,12 @@ Platform::~Platform()
 // TODO: проверить, дабловые ли здесь аргументы или интовые
 //
 
-Platform::Platform(const Platform& r):
+Platform::Platform(const Platform& r) :
     fixture(r.fixture),
     sprite(txCreateCompatibleDC(fixture.maximum.x, fixture.minimum.y))
 {
     txBitBlt(sprite, 0, 0, 0, 0, r.sprite);
 }
+
 
 #endif // __PLATFORM_H__

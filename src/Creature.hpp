@@ -14,6 +14,7 @@ class Creature
 private:
     Coords coords;
     Data data;
+    AABB fixture;
     std::map < std::string, Animation > animations;
 public:
     Creature(Coords _coords, Data _data, std::map < std::string, Animation > _animations);
@@ -23,12 +24,17 @@ public:
     void moveLeft();
     void jump();
     void keys_interaction(int rkey, int lkey);
+    bool collideWithPlatform(const Platform& pl);
     Coords getCoords();
     Data getData();
+    AABB get_fixture();
 };
 
 Creature::Creature(Coords _coords, Data _data, std::map < std::string, Animation > _animations) :
-    coords(_coords), data(_data), animations(_animations) {}
+    coords(_coords), data(_data), animations(_animations)
+    {
+        AABB fixture(coords, coords.x + getSizeX(), coords.y + getSizeY());
+    }
 
 void Creature::addAnimation(std::string name, Animation animation)
 {
@@ -53,7 +59,15 @@ void Creature::jump(Level level)
     /*Please create creature jump!*/
 }
 
+bool Creature::collideWithPlatform(const Platform& pl) :
+{
+    if(getData().get_velocity_y() > 0)
+        return false;
+    return fixture.colliedWithFixture(pl.get_fixture());
+}
+
 Coords Creature::getCoords() { return coords; }
 Data Creature::getData() { return data; }
+AABB Creature::get_fixture() { return fixture; }
 
 #endif //__CREATURE_H__
