@@ -6,64 +6,106 @@
 #include "AABB.hpp"
 #include "Animation.hpp"
 #include "Data.hpp"
-#include "Level.hpp"
+#include "Platform.hpp"
 #include <map>
+
+enum Direction
+{
+    Right,
+    Left,
+    None
+};
+
+enum Animations
+{
+    Stay,
+    MoveRight,
+    MoveLeft,
+    Jump,
+    AttackRight,
+    AttackLeft,
+    Slide,
+    Parry
+};
 
 class Creature
 {
-private:
+protected:
     Coords coords;
     Data data;
     AABB fixture;
-    std::map < std::string, Animation > animations;
+    Direction direction;
+    std::map < Animations, Animation > animations;
+    Creature(Coords _coords, Data _data, Direction _direction, std::map < Animations, Animation > _animations);
 public:
-    Creature(Coords _coords, Data _data, std::map < std::string, Animation > _animations);
-
-    void addAnimation(std::string name, Animation animation);
-    void moveRight();
-    void moveLeft();
+    virtual ~Creature() {}
+    void addAnimation(Animations animation_type, Animation animation);
+    void attack();
+    void turnRight();
+    void turnLeft();
+    void go();
     void jump();
-    void keys_interaction(int rkey, int lkey);
-    bool collideWithPlatform(const Platform& pl);
+    virtual void update() const = 0;
+    bool collideWithPlatform(Platform& pl);
     Coords getCoords();
     Data getData();
     AABB get_fixture();
 };
 
-Creature::Creature(Coords _coords, Data _data, std::map < std::string, Animation > _animations) :
-    coords(_coords), data(_data), animations(_animations)
-    {
-        AABB fixture(coords, coords.x + getSizeX(), coords.y + getSizeY());
-    }
+Creature::Creature(Coords _coords, Data _data, Direction _direction, std::map < Animations, Animation > _animations) :
+    coords(_coords), data(_data), fixture(Coords(coords), direction(_direction), Coords(coords.x + animations.at(Stay).getSizeX(), coords.y + animations.at(Stay).getSizeY())),
+    animations(_animations) {}
 
-void Creature::addAnimation(std::string name, Animation animation)
+void Creature::addAnimation(Animations animation_type, Animation animation)
 {
-    if(animations.count(name) != 0)
+    if(animations.count(animation_type) != 0)
         return;
-    animations.insert(std::make_pair(name, animation));
+    animations.insert(std::make_pair(animation_type, animation));
 }
 
-void Creature::moveRight()
+void Creature::attack()
 {
-    coords.x += std::abs(data.get_velocity_x());
-    data.set_velocity_x(std::abs(data.get_velocity_x()) + std::abs(data.get_acceleration()));
-}
-void Creature::moveLeft()
-{
-    coords.x -= std::abs(data.get_velocity_x());
-    data.set_velocity_x(std::abs(data.get_velocity_x()) + std::abs(data.get_acceleration()));
-}
-
-void Creature::jump(Level level)
-{
-    /*Please create creature jump!*/
+    if(direction == Left)
+    {
+        animations.at(AttackLeft).update(coords.x, coords.y);
+    }
+    else if(direction == Right)
+    {
+        animations.at(AttackRight).update(coords.x, coords.y);
+    }
 }
 
-bool Creature::collideWithPlatform(const Platform& pl) :
+void Creature::turnRight() { direction = Right; }
+
+void Creature::turnLeft() { direction = Left; }
+
+void Creature::go()
+{
+    if(direction == Left)
+    {
+        animations.at(MoveLeft).update(coords.x, coords.y);
+        coords.x -= std::abs(data.get_velocity_x());
+        data.set_velocity_x(std::abs(data.get_velocity_x()) + std::abs(data.get_acceleration()));
+    }
+    else if(direction == Right)
+    {
+        animations.at(MoveRight).update(coords.x, coords.y);
+        coords.x += std::abs(data.get_velocity_x());
+        data.set_velocity_x(std::abs(data.get_velocity_x()) + std::abs(data.get_acceleration()));
+    }
+    else return;
+}
+
+void Creature::jump()
+{
+    /*Thanks!*/
+}
+
+bool Creature::collideWithPlatform(Platform& pl)
 {
     if(getData().get_velocity_y() > 0)
         return false;
-    return fixture.colliedWithFixture(pl.get_fixture());
+    return fixture.collideWithFixture(pl.get_fixture());
 }
 
 Coords Creature::getCoords() { return coords; }

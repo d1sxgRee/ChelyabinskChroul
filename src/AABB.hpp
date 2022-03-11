@@ -10,11 +10,15 @@ public:
     Coords minimum;
     Coords maximum;
 
+    AABB();
     AABB(Coords, Coords);
     AABB(const AABB& a);
     inline AABB& operator= (const AABB& a);
     bool collideWithFixture(const AABB& a);
 };
+
+AABB::AABB() :
+    minimum(), maximum() {}
 
 AABB::AABB(Coords _minimum, Coords _maximum) :
     minimum(_minimum), maximum(_maximum)

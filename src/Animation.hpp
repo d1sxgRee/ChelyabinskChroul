@@ -23,6 +23,7 @@ public:
     Animation(const Animation& a);
     Animation& operator= (const Animation& a) = default;
     ~Animation();
+    unsigned getInLineSpriteNumber();
     double getSizeX();
     double getSizeY();
     void draw(double x,double y);
@@ -53,6 +54,8 @@ Animation::Animation(const Animation& a) :
 
 Animation::~Animation() { txDeleteDC(image); }
 
+unsigned Animation::getInLineSpriteNumber() { return static_cast < unsigned > (std::abs(endX / width)); }
+
 double Animation::getSizeX() { return width * scaleX; }
 
 double Animation::getSizeY() { return height * scaleY; }
@@ -72,7 +75,7 @@ void Animation::update(double screen_x, double screen_y)
 {
     draw(screen_x, screen_y);
     sprite_x += width;
-    if(sprite_x > endX-width)
+    if(sprite_x > endX - width)
     {
         sprite_x = loop_x;
     }
@@ -83,9 +86,6 @@ void Animation::setY(double y)
     sprite_y = y;
 }
 
-void Animation::set_default_position()
-{
-    sprite_x = start_x;
-}
+void Animation::set_default_position() { sprite_x = start_x; }
 
 #endif //__ANIMATION_H__
