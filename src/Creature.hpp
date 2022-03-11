@@ -8,6 +8,7 @@
 #include "Data.hpp"
 #include "Platform.hpp"
 #include <map>
+#include <climits>
 
 enum Direction
 {
@@ -24,7 +25,8 @@ enum Animations
     Jump,
     AttackRight,
     AttackLeft,
-    Slide,
+    SlideRight,
+    SlideLeft,
     Parry
 };
 
@@ -53,8 +55,8 @@ public:
 };
 
 Creature::Creature(Coords _coords, Data _data, Direction _direction, std::map < Animations, Animation > _animations) :
-    coords(_coords), data(_data), fixture(Coords(coords), direction(_direction), Coords(coords.x + animations.at(Stay).getSizeX(), coords.y + animations.at(Stay).getSizeY())),
-    animations(_animations) {}
+    coords(_coords), data(_data), fixture(Coords(coords), Coords(coords.x + animations.at(Stay).getSizeX(), coords.y + animations.at(Stay).getSizeY())),
+    direction(_direction), animations(_animations) {}
 
 void Creature::addAnimation(Animations animation_type, Animation animation)
 {
@@ -81,6 +83,9 @@ void Creature::turnLeft() { direction = Left; }
 
 void Creature::go()
 {
+    double e = std::numeric_limits<double>::epsilon();
+    if(std::abs(data.get_velocity_y() - 0) <= e)
+        return;
     if(direction == Left)
     {
         animations.at(MoveLeft).update(coords.x, coords.y);

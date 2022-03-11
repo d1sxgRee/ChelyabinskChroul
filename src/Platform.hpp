@@ -15,7 +15,7 @@ public:
     ~Platform();
     Platform(const Platform& r);
     // этот вроде бы не нужный
-    Platform& operator= (const Platform& r) = delete;
+    Platform& operator= (const Platform& r);
     // нормальные мужыцкие методы для мужиков
     inline AABB get_fixture() { return fixture; };
 };
@@ -42,5 +42,10 @@ Platform::Platform(const Platform& r) :
     txBitBlt(sprite, 0, 0, 0, 0, r.sprite);
 }
 
-
+Platform& Platform::operator= (const Platform& r)
+{
+    this->fixture = r.fixture;
+    this->sprite = r.sprite;
+    return *this;
+}
 #endif // __PLATFORM_H__
