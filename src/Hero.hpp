@@ -31,7 +31,7 @@ void Hero::update()
         turnLeft();
         go();
     }
-    if(GetASyncKeyState(JUMP))
+    if(GetAsyncKeyState(JUMP))
     {
         jump();
     }

@@ -3,27 +3,43 @@
 
 #include <fstream>
 #include <vector>
+#include <typeinfo>
 #include "Platform.hpp"
 #include "Creature.hpp"
 
 class Level
 {
 private:
-    std::vector < Creature > creatures; // вектор НИПов
-    Creature hero;                      // персонаж
-    std::vector < Platform > platforms; // платформы чтобы прыгать
+    std::vector < Creature* > creatures; // вектор НИПов
+    std::vector < Platform* > platforms; // платформы чтобы прыгать
 public:
-    Level(Creature _hero):
-        creatures(), hero(_hero), platforms() {}
-    void addPlatform(Platform p);
-    void addCreature(Creature c);
-    std::vector < Platform > getPlatforms();
+    Level(std::vector < Creature* > _creatures, std::vector < Platform* > _platforms);
+    void addPlatform(Platform* p);
+    void addCreature(Creature* c);
+    std::vector < Platform* > getPlatforms();
+    void update();
 };
 
-void Level::addPlatform(Platform p) { platforms.push_back(p); }
+Level::Level(std::vector < Creature* > _creatures, std::vector < Platform* > _platforms) :
+    creatures(_creatures), platforms(_platforms) {}
 
-void Level::addCreature(Creature c) { creatures.push_back(c); }
+void Level::addPlatform(Platform* p) { platforms.push_back(p); }
 
-std::vector < Platform > Level::getPlatforms() { return platforms; }
+void Level::addCreature(Creature* c)
+{
+    if(typeid(c).name() == "class Hero")
+        return;
+    creatures.push_back(c);
+}
+
+std::vector < Platform* > Level::getPlatforms() { return platforms; }
+
+void Level::update()
+{
+    for(auto pl: platforms)
+        pl->draw();
+    for(size_t i = 0; i < creatures.size(); i++)
+        creatures.at(i)->update();
+}
 
 #endif

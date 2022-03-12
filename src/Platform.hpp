@@ -2,7 +2,7 @@
 #define __PLATFORM_H__
 
 #include "TXLib.h"
-#include "Creature.hpp"
+#include "AABB.hpp"
 
 class Platform
 {
@@ -18,6 +18,7 @@ public:
     Platform& operator= (const Platform& r);
     // нормальные мужыцкие методы для мужиков
     inline AABB get_fixture() { return fixture; };
+    void draw();
 };
 
 Platform::Platform(AABB _fixture, HDC _sprite) :
@@ -47,5 +48,13 @@ Platform& Platform::operator= (const Platform& r)
     this->fixture = r.fixture;
     this->sprite = r.sprite;
     return *this;
+}
+
+void Platform::draw()
+{
+    Win32::TransparentBlt(txDC(), static_cast < int > (fixture.minimum.x),
+    static_cast < int > (fixture.minimum.y), 0, 0, sprite, 0, 0,
+    static_cast < int > (fixture.maximum.x - fixture.minimum.x),
+    static_cast < int > (fixture.maximum.y - fixture.minimum.y), TX_BLACK);
 }
 #endif // __PLATFORM_H__

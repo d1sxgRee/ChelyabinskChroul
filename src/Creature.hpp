@@ -47,7 +47,7 @@ public:
     void turnLeft();
     void go();
     void jump();
-    virtual void update() const = 0;
+    virtual void update() = 0;
     bool collideWithPlatform(Platform& pl);
     Coords getCoords();
     Data getData();
