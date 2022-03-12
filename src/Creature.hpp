@@ -42,12 +42,13 @@ protected:
 public:
     virtual ~Creature() {}
     void addAnimation(Animations animation_type, Animation animation);
+    void slide();
     void attack();
     void turnRight();
     void turnLeft();
     void go();
     void jump();
-    virtual void update() const = 0;
+    virtual void update() = 0;
     bool collideWithPlatform(Platform& pl);
     Coords getCoords();
     Data getData();
@@ -63,6 +64,15 @@ void Creature::addAnimation(Animations animation_type, Animation animation)
     if(animations.count(animation_type) != 0)
         return;
     animations.insert(std::make_pair(animation_type, animation));
+}
+
+void Creature::slide()
+{
+    if(direction == Left)
+        animations.at(SlideLeft).update(coords.x, coords.y);
+    else if(direction == Right)
+        animations.at(SlideRight).update(coords.x, coords.y);
+    else return;
 }
 
 void Creature::attack()
