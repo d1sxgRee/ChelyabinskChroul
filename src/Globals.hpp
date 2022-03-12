@@ -3,6 +3,8 @@
 
 #include <TxLib.h>
 
+//#define NDEBUG
+
 inline void screen_update(int ms_sleep_time);
 inline void pause_if(int vkey);
 
