@@ -6,10 +6,10 @@ class Hero : public Creature
 public:
     Hero(Coords coords, Data _data, std::map < Animations, Animation > _animations);
 
-    void update() override;
+    void update(std::vector < Platform* > platforms) override;
 };
 
-void Hero::update()
+void Hero::update(std::vector < Platform* > platforms)
 {
     if(GetAsyncKeyState(RKEY))
     {
@@ -23,7 +23,7 @@ void Hero::update()
     }
     if(GetAsyncKeyState(JUMP))
     {
-        jump();
+        jump(platforms, 7.0);
     }
     if(GetAsyncKeyState(AKEY))
     {

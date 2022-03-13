@@ -51,6 +51,7 @@ void Level::deletePlatform(size_t index)
     assert(index < creatures.size());
     platforms.erase(platforms.begin() + index);
 }
+
 void Level::deleteCreature(size_t index)
 {
     assert(index < creatures.size());
@@ -66,7 +67,7 @@ void Level::update()
     for(auto bl: blocks)
         bl.draw(0);
     for(size_t i = 0; i < creatures.size(); i++)
-        creatures.at(i)->update();
+        creatures.at(i)->update(getPlatforms());
 }
 
 #endif

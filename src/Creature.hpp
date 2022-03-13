@@ -47,8 +47,8 @@ public:
     void turnRight();
     void turnLeft();
     void go();
-    void jump();
-    virtual void update() = 0;
+    void jump(std::vector < Platform* > platforms, double jump_force);
+    virtual void update(std::vector < Platform* > platforms) = 0;
     bool collideWithPlatform(Platform& pl);
     Coords getCoords();
     Data getData();
@@ -111,9 +111,29 @@ void Creature::go()
     else return;
 }
 
-void Creature::jump()
+void Creature::jump(std::vector < Platform* > platforms, double jump_force)
 {
-    /*Thanks!*/
+    static int func_entry_number = 0;
+    func_entry_number++;     // == 1
+    bool on_platform = false;
+    if(jump_force < gravity)
+        jump_force += gravity;
+    if(func_entry_number == 1)
+        data.set_velocity_y(data.get_velocity_y() + jump_force);
+    for(auto el: platforms)
+        if(this->collideWithPlatform(*el))
+            on_platform = true;
+    if(!on_platform || (on_platform && func_entry_number == 1))  //in flight and takeoff
+    {
+        coords.y += data.get_velocity_y();
+        data.set_velocity_y(data.get_velocity_y() - gravity);
+    }
+    else     //landed
+    {
+        func_entry_number = 0;
+        data.set_velocity_y(0);
+    }
+
 }
 
 bool Creature::collideWithPlatform(Platform& pl)
