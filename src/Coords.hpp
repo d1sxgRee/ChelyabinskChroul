@@ -12,6 +12,7 @@ public:
     double x;
     double y;
 
+    Coords();
     Coords(double x, double y);
     Coords operator+ (const Coords& r);
     Coords operator- (const Coords& r);
@@ -22,6 +23,9 @@ public:
     inline bool operator<=(const Coords& r);
     inline bool operator>=(const Coords& r);
 };
+
+Coords::Coords() :
+    x(), y() {}
 
 Coords::Coords(double _x, double _y) :
     x(_x), y(_y) {}
