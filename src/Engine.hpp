@@ -3,6 +3,7 @@
 
 #include "Level.hpp"
 #include "Hero.hpp"
+#include "NPC.hpp"
 
 class Engine
 {

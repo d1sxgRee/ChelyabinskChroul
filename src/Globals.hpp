@@ -10,6 +10,12 @@ inline void pause_if(int vkey);
 
 const double gravity = 9.81;
 
+const unsigned sleep_time = 10;
+
+const unsigned max_hp = 100;
+
+const double NPC_JUMP_FORCE = 40;
+
 const int RKEY = int('D');                              /*The button responsible for moving to the right*/
 const int LKEY = int('A');                              /*the button responsible for moving to the left*/
 const int SKEY = int('S');                              /*The button responsible for sliding*/

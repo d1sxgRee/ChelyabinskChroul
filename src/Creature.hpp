@@ -50,6 +50,8 @@ public:
     void jump(std::vector < Platform* > platforms, double jump_force);
     virtual void update(std::vector < Platform* > platforms) = 0;
     bool collideWithPlatform(Platform& pl);
+    double getJumpLength(double jump_force);
+    double getMaxJumpHeight(double jump_force);
     Coords getCoords();
     Data getData();
     AABB get_fixture();
@@ -113,26 +115,29 @@ void Creature::go()
 
 void Creature::jump(std::vector < Platform* > platforms, double jump_force)
 {
-    static int func_entry_number = 0;
-    func_entry_number++;     // == 1
     bool on_platform = false;
+    unsigned counter = 0;
     if(jump_force < gravity)
         jump_force += gravity;
-    if(func_entry_number == 1)
-        data.set_velocity_y(data.get_velocity_y() + jump_force);
-    for(auto el: platforms)
-        if(this->collideWithPlatform(*el))
-            on_platform = true;
-    if(!on_platform || (on_platform && func_entry_number == 1))  //in flight and takeoff
+    data.set_velocity_y(jump_force);
+    while(!on_platform || counter == 0)
     {
-        coords.y += data.get_velocity_y();
-        data.set_velocity_y(data.get_velocity_y() - gravity);
+        for(auto el: platforms)
+            if(this->collideWithPlatform(*el))
+                on_platform = true;
+        if(!on_platform || (on_platform && counter == 0))  //in flight and takeoff
+        {
+            if(direction == Left)
+                coords.x -= data.get_velocity_x();
+            else if(direction == Right)
+                coords.x += data.get_velocity_x();
+            animations.at(Jump).update(coords.x, coords.y);
+            coords.y += data.get_velocity_y();
+            data.set_velocity_y(data.get_velocity_y() - gravity);
+        }
+        counter++;
     }
-    else     //landed
-    {
-        func_entry_number = 0;
-        data.set_velocity_y(0);
-    }
+    data.set_velocity_y(0);
 
 }
 
@@ -143,8 +148,19 @@ bool Creature::collideWithPlatform(Platform& pl)
     return fixture.collideWithFixture(pl.get_fixture());
 }
 
+double Creature::getJumpLength(double jump_force) { return data.get_velocity_x() * (static_cast < int > (jump_force / gravity)); };
+
+double Creature::getMaxJumpHeight(double jump_force)
+{
+    if(jump_force - gravity > 0 && jump_force - gravity < gravity)
+        return jump_force;
+    return jump_force + getMaxJumpHeight(jump_force - gravity);
+}
+
 Coords Creature::getCoords() { return coords; }
+
 Data Creature::getData() { return data; }
+
 AABB Creature::get_fixture() { return fixture; }
 
 #endif //__CREATURE_H__
