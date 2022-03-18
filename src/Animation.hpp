@@ -48,13 +48,12 @@ Animation::Animation(const Animation& a) :
     scaleY(a.scaleY), endX(a.endX),loop_x(a.loop_x),
     image(txCreateCompatibleDC(a.endX, a.height)), color(a.color)
 {
-    // пришлось перенести наверх, чтобы варнингов не было((
     txBitBlt(image, 0, 0, 0, 0, a.image);
 }
 
 Animation::~Animation() { txDeleteDC(image); }
 
-unsigned Animation::getInLineSpriteNumber() { return static_cast < unsigned > (std::abs(endX / width)); }
+//unsigned Animation::getInLineSpriteNumber() { return static_cast < unsigned > (std::abs(endX / width)); }
 
 double Animation::getSizeX() { return width * scaleX; }
 
@@ -68,8 +67,6 @@ void Animation::draw(double x, double y)
     static_cast < int > (sprite_y), static_cast < int > (width),
     static_cast < int > (height), color);
 }
-
-
 
 void Animation::update(double screen_x, double screen_y)
 {
