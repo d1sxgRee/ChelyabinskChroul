@@ -1,42 +1,45 @@
 #ifndef __HERO_H__
 #define __HERO_H__
 
+#include <ctime>
+
 class Hero : public Creature
 {
 public:
-    Hero(Coords coords, Data _data, std::map < Animations, Animation > _animations);
-
-    void update() override;
+    Hero(std::map < ATypes, std::pair < Animation, AABB > >, Data, Direction, Condition);
+    void update(std::vector < Platform* >, std::vector < Creature* >) override;
 };
 
-void Hero::update()
+Hero::Hero(std::map < ATypes, std::pair < Animation, AABB > > _animations, Data _data, Direction _direction, Condition _condition) :
+    Creature(_animations, _data, _direction, _condition) {}
+
+void Hero::update(std::vector < Platform* > platforms, std::vector < Creature* > creatures)
 {
+    clock_t start = clock();
     if(GetAsyncKeyState(RKEY))
     {
-        turnRight();
-        go();
+        setDirection(Direction::Right);
+        go(true);
     }
-    if(GetAsyncKeyState(LKEY))
+    else if(GetAsyncKeyState(LKEY))
     {
-        turnLeft();
-        go();
+        setDirection(Direction::Left);
+        go(true);
     }
-    if(GetAsyncKeyState(JUMP))
+    else if(GetAsyncKeyState(SKEY) && (clock() - start) / CLOCKS_PER_SEC >= slide_cooldown)
     {
-        jump();
+        /*slide*/
     }
-    if(GetAsyncKeyState(AKEY))
+    else if((GetAsyncKeyState(JUMP) && condition == Condition::OnPlatform) || condition == Condition::InJump)
     {
-        attack();
+        jump(7.0);
     }
-    if(GetAsyncKeyState(SKEY))
+    else if(GetAsyncKeyState(AKEY) && (clock() - start) / CLOCKS_PER_SEC >= attack_cooldown)
     {
-        slide();
+        attack(creatures);
     }
-    else
-    {
-        animations.at(Stay).update(coords.x, coords.y);
-    }
+    updateAllFixtures();
+    updateCondition(platforms);
 }
 
 #endif //__HERO_H__

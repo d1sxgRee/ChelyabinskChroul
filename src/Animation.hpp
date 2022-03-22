@@ -26,7 +26,9 @@ public:
     unsigned getInLineSpriteNumber();
     double getSizeX();
     double getSizeY();
-    void draw(double x,double y);
+    void draw(AABB fixture);
+    void draw(double x, double y);
+    void update(AABB fixture);
     void update(double x, double y);
     void setY(double y);
     void set_default_position();
@@ -48,16 +50,34 @@ Animation::Animation(const Animation& a) :
     scaleY(a.scaleY), endX(a.endX),loop_x(a.loop_x),
     image(txCreateCompatibleDC(a.endX, a.height)), color(a.color)
 {
+    // пришлось перенести наверх, чтобы варнингов не было((
     txBitBlt(image, 0, 0, 0, 0, a.image);
 }
 
 Animation::~Animation() { txDeleteDC(image); }
 
-//unsigned Animation::getInLineSpriteNumber() { return static_cast < unsigned > (std::abs(endX / width)); }
+unsigned Animation::getInLineSpriteNumber() { return static_cast < unsigned > (std::abs(endX / width)); }
 
 double Animation::getSizeX() { return width * scaleX; }
 
 double Animation::getSizeY() { return height * scaleY; }
+
+void Animation::draw(AABB fixture)
+{
+    double xlength = fixture.maximum.x - fixture.minimum.x;
+    double ylength = fixture.maximum.y - fixture.minimum.y;
+    Win32::TransparentBlt (txDC(),
+    static_cast < int > (fixture.minimum.x),
+    static_cast < int > (fixture.minimum.y),
+    static_cast < int > (xlength),
+    static_cast < int > (ylength),
+    image,
+    static_cast < int > (sprite_x),
+    static_cast < int > (sprite_y),
+    static_cast < int > (width),
+    static_cast < int > (height),
+    color );
+}
 
 void Animation::draw(double x, double y)
 {
@@ -71,6 +91,16 @@ void Animation::draw(double x, double y)
 void Animation::update(double screen_x, double screen_y)
 {
     draw(screen_x, screen_y);
+    sprite_x += width;
+    if(sprite_x > endX - width)
+    {
+        sprite_x = loop_x;
+    }
+}
+
+void Animation::update(AABB fixture)
+{
+    draw(fixture);
     sprite_x += width;
     if(sprite_x > endX - width)
     {

@@ -3,25 +3,19 @@
 
 #include "Creature.hpp"
 
-enum NPC_STATE
+enum class States
 {
-    Apathy,
-    Patrol,
-    Fight
-}
-
-class NPC : public Creature
-{
-private:
-    NPC_STATE state;
-public:
-    NPC(Coords _coords, Data _data, std::map < std::string, Animation > _animations, NPC_STATE _state);
-
-    /*You must implement finding paths from a random platform to a random one for the bot,
-    using the moveRight, moveLeft, jump functions.
-    Also implement a function that determines whether the bot sees the hero.*/
+    Patrooling,
+    Attacking,
+    Fleeing,
+    Idling,
+    Searching
 };
 
-NPC::NPC(Coords _coords, Data _data, std::map < std::string, Animation > _animations, NPC_STATE _state) :
-    Creature(_coords, _data, _animations), state(_state) {}
+class NPC
+{
+public:
+    NPC(std::map < ATypes, std::pair < Animation, AABB > >, Data, Direction, Condition);
+};
+
 #endif //__NPC_H__
