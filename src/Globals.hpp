@@ -16,6 +16,10 @@ const unsigned max_hp = 100;
 
 const double NPC_JUMP_FORCE = 40;
 
+const int attack_cooldown = 3;
+const int slide_cooldown = 4;
+const int parry_cooldown = 4;
+
 const int RKEY = int('D');                              /*The button responsible for moving to the right*/
 const int LKEY = int('A');                              /*the button responsible for moving to the left*/
 const int SKEY = int('S');                              /*The button responsible for sliding*/

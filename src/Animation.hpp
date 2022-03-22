@@ -50,12 +50,13 @@ Animation::Animation(const Animation& a) :
     scaleY(a.scaleY), endX(a.endX),loop_x(a.loop_x),
     image(txCreateCompatibleDC(a.endX, a.height)), color(a.color)
 {
+    // пришлось перенести наверх, чтобы варнингов не было((
     txBitBlt(image, 0, 0, 0, 0, a.image);
 }
 
 Animation::~Animation() { txDeleteDC(image); }
 
-//unsigned Animation::getInLineSpriteNumber() { return static_cast < unsigned > (std::abs(endX / width)); }
+unsigned Animation::getInLineSpriteNumber() { return static_cast < unsigned > (std::abs(endX / width)); }
 
 double Animation::getSizeX() { return width * scaleX; }
 

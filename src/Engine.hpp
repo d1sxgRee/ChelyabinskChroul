@@ -26,7 +26,7 @@ void Engine::start(int exit_key, int ms_sleep_time)
     {
         pause_if(PKEY);
         level.update();
-        hero.update(level.getPlatforms());
+        hero.update(level.getPlatforms(), level.getCreatures());
         screen_update(ms_sleep_time);
     }
     txEnd();

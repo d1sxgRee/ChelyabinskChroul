@@ -53,6 +53,7 @@ protected:
     virtual ~Creature() = default;
 public:
     void updateAllFixtures();
+    void updateCondition(std::vector < Platform* >);
     void setDirection(Direction);
     void setCondition(Condition);
     void setLastAnimation(ATypes);
@@ -60,6 +61,9 @@ public:
     void go(bool);
     void jump(double jump_force);
     virtual void update(std::vector < Platform* >, std::vector < Creature* >) = 0;
+    double getMaxJumpHeight(double);
+    double getJumpWidth(double, double);
+    Condition getCondition();
     ATypes getLastAnimation();
     Data getData();
     AABB getFixture(ATypes);
@@ -67,19 +71,41 @@ public:
 
 Creature::Creature(Data _data) :
     animations(), data(_data), direction(Direction::None),
-    condition(Condition::None), last_animation() {}
+    condition(Condition::None), last_animation(ATypes::Stay) {}
 
 Creature::Creature( std::map < ATypes, std::pair < Animation, AABB > > _animations,
                     Data _data, Direction _direction, Condition _condition) :
     animations(_animations), data(_data),
     direction(_direction), condition(_condition),
-    last_animation() {}
+    last_animation(ATypes::Stay) {}
 
 void Creature::updateAllFixtures()
 {
     AABB true_fixture = animations.at(last_animation).second;
     for(auto el: animations)
         el.second.second = {true_fixture.minimum, Coords(true_fixture.minimum + (el.second.second.maximum - el.second.second.minimum))};
+}
+
+void Creature::updateCondition(std::vector < Platform* > platforms)
+{
+    if(condition != Condition::OnPlatform)
+    {
+        for(auto el: platforms)
+        {
+            if(animations.at(last_animation).second.collideWithFixture(el->get_fixture()))
+            {
+                condition = Condition::OnPlatform;
+                return;
+            }
+        }
+    }
+    if(data.get_velocity_y() < 0)
+    {
+        condition = Condition::FreeFall;
+        return;
+    }
+    else if(data.get_velocity_y() >= 0)
+        condition = Condition::InJump;
 }
 
 void Creature::setDirection(Direction new_direction) { direction = new_direction; }
@@ -176,6 +202,23 @@ void Creature::jump(double jump_force)
             setLastAnimation(ATypes::FreeFall);
         }
     }
+}
+
+double Creature::getMaxJumpHeight(double jump_force)
+{
+    return (jump_force * jump_force) / (2 * gravity);
+}
+
+double Creature::getJumpWidth(double ydelta, double jump_force)
+{
+    if(ydelta < data.get_velocity_y())
+        return data.get_velocity_x();
+    return data.get_velocity_x() + getJumpWidth(ydelta - jump_force, jump_force - gravity);
+}
+
+Condition Creature::getCondition()
+{
+    return condition;
 }
 
 ATypes Creature::getLastAnimation()

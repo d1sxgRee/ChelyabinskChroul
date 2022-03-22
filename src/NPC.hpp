@@ -12,4 +12,10 @@ enum class States
     Searching
 };
 
+class NPC
+{
+public:
+    NPC(std::map < ATypes, std::pair < Animation, AABB > >, Data, Direction, Condition);
+};
+
 #endif //__NPC_H__
