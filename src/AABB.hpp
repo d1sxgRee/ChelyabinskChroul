@@ -15,6 +15,7 @@ public:
     AABB(const AABB& a);
     inline AABB& operator= (const AABB& a);
     bool collideWithFixture(const AABB& a);
+    bool collideWithCircle(Coords center, double radius);
 };
 
 AABB::AABB() :
@@ -49,5 +50,37 @@ bool AABB::collideWithFixture(const AABB& a)
     if(maximum.y < a.minimum.y || minimum.y > a.maximum.y)
         return false;
     return true;
+}
+
+bool AABB::collideWithCircle(Coords center, double radius)
+{
+    assert(radius >= 0);
+    if(center.y < minimum.y)
+    {
+        if(center.x < minimum.x)
+            return ((center.x - minimum.x) * (center.x - minimum.x) +
+            (center.y - minimum.y) * (center.y - minimum.y)) <= radius * radius;
+        if(center.x > maximum.x)
+            return ((center.x - maximum.x) * (center.x - maximum.x) +
+            (center.y - maximum.y) * (center.y - maximum.y)) <= radius * radius;
+        return minimum.y - center.y <= radius;
+    }
+    if(center.y > maximum.y)
+    {
+        if(center.x < minimum.x)
+          return ((center.x - minimum.x) * (center.x - minimum.x) +
+          (center.y - maximum.y) * (center.y - maximum.y)) <= radius * radius;
+        if(center.x > maximum.x)
+          return ((center.x - maximum.x) * (center.x - maximum.x) +
+          (center.y - maximum.y) * (center.y - maximum.y)) <= radius * radius;
+        return center.y - maximum.y <= radius;
+    }
+
+    if(center.x < minimum.x)
+        return minimum.x - center.x <= radius;
+    if(center.x > maximum.x)
+        return center.x - maximum.x <= radius;
+    return center.x - minimum.x <= radius || maximum.x - center.x <= radius ||
+    center.y - minimum.y <= radius || maximum.y - center.y <= radius;
 }
 #endif //__AABB_H__
