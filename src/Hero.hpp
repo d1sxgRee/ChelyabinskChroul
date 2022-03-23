@@ -30,7 +30,7 @@ void Hero::update(std::vector < Platform* > platforms, std::vector < Creature* >
     {
         /*slide*/
     }
-    else if((GetAsyncKeyState(JUMP) && condition == Condition::OnPlatform) || condition == Condition::InJump)
+    else if(GetAsyncKeyState(JUMP) || condition != Condition::OnPlatform)
     {
         jump(7.0);
     }
