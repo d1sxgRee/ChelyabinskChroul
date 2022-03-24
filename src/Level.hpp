@@ -4,6 +4,7 @@
 #include <fstream>
 #include <vector>
 #include <typeinfo>
+#include "Globals.hpp"
 #include "Platform.hpp"
 #include "Creature.hpp"
 #include "Blocks.hpp"
@@ -14,6 +15,8 @@ private:
     std::vector < Creature* > creatures; // вектор НИПов
     std::vector < Platform* > platforms; // платформы чтобы прыгать
     std::vector < Blocks > blocks;
+
+    std::vector < std::vector < size_t > > possible_transitions;
 public:
     Level(std::vector < Creature* > _creatures, std::vector < Platform* > _platforms, std::vector < Blocks > _blocks);
     void addBlocks(Blocks b);
@@ -23,12 +26,16 @@ public:
     void deletePlatform(size_t index);
     void deleteCreature(size_t index);
     std::vector < Platform* > getPlatforms();
+    std::vector < Creature* > getCreatures();
     bool visioble(Coords c1, Coords c2);
     void update();
 };
 
 Level::Level(std::vector < Creature* > _creatures, std::vector < Platform* > _platforms, std::vector < Blocks > _blocks) :
-    creatures(_creatures), platforms(_platforms), blocks(_blocks) {}
+    creatures(_creatures), platforms(_platforms), blocks(_blocks), possible_transitions()
+{
+
+}
 
 void Level::addBlocks(Blocks b) { blocks.push_back(b); }
 
@@ -52,6 +59,7 @@ void Level::deletePlatform(size_t index)
     assert(index < creatures.size());
     platforms.erase(platforms.begin() + index);
 }
+
 void Level::deleteCreature(size_t index)
 {
     assert(index < creatures.size());
@@ -60,6 +68,7 @@ void Level::deleteCreature(size_t index)
 
 std::vector < Platform* > Level::getPlatforms() { return platforms; }
 
+std::vector < Creature* > Level::getCreatures() { return creatures; }
 bool Level::visioble(Coords c1, Coords c2)
 {
     double dx = c2.x - c1.x;
@@ -84,7 +93,7 @@ void Level::update()
     for(auto bl: blocks)
         bl.draw(0);
     for(size_t i = 0; i < creatures.size(); i++)
-        creatures.at(i)->update();
+        creatures.at(i)->update(platforms, creatures);
 }
 
 #endif
