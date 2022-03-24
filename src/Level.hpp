@@ -23,6 +23,7 @@ public:
     void deletePlatform(size_t index);
     void deleteCreature(size_t index);
     std::vector < Platform* > getPlatforms();
+    bool visioble(Coords c1, Coords c2);
     void update();
 };
 
@@ -58,6 +59,23 @@ void Level::deleteCreature(size_t index)
 }
 
 std::vector < Platform* > Level::getPlatforms() { return platforms; }
+
+bool Level::visioble(Coords c1, Coords c2)
+{
+    double dx = c2.x - c1.x;
+    double dy = c2.y - c1.y;
+    double k = dx / dy;
+    for(auto pl: platforms)
+    {
+      double day = pl->get_fixture().minimum.y - c1.y;
+      double ax = c1.x + k * day;
+      if(ax <= pl->get_fixture().maximum.x && ax >= pl->get_fixture().minimum.x)
+      {
+        return true;
+      }
+    }
+    return false;
+}
 
 void Level::update()
 {
