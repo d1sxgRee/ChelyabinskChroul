@@ -33,7 +33,82 @@ public:
 Level::Level(std::vector < Creature* > _creatures, std::vector < Platform* > _platforms, std::vector < Blocks > _blocks) :
     creatures(_creatures), platforms(_platforms), blocks(_blocks), possible_transitions()
 {
-
+    possible_transitions.reserve(0);
+    possible_transitions.resize(0);
+    for(size_t i = 0; i < platforms.size(); i++)
+    {
+        for(size_t j = 0; j < platforms.size(); j++)
+        {
+            if(i == j)
+                continue;
+            if(platforms.at(i)->get_fixture().minimum.y > platforms.at(j)->get_fixture().maximum.y)
+            {
+                if(platforms.at(i)->get_fixture().minimum < platforms.at(j)->get_fixture().minimum)
+                {
+                    if(platforms.at(i)->get_fixture().minimum.y - creatures.at(0)->getMaxJumpHeight(NPC_JUMP_FORCE) <= platforms.at(j)->get_fixture().minimum.y &&
+                    platforms.at(i)->get_fixture().minimum.x + creatures.at(0)->getData().get_velocity_x() +
+                    creatures.at(0)->getJumpWidth(platforms.at(i)->get_fixture().minimum.y - platforms.at(j)->get_fixture().minimum.y, NPC_JUMP_FORCE) >=
+                    platforms.at(j)->get_fixture().minimum.x)
+                        possible_transitions.at(i).push_back(j);
+                    else continue;
+                }
+                else if(platforms.at(i)->get_fixture().maximum > platforms.at(j)->get_fixture().maximum)
+                {
+                    if(platforms.at(i)->get_fixture().minimum.y - creatures.at(0)->getMaxJumpHeight(NPC_JUMP_FORCE) <= platforms.at(j)->get_fixture().minimum.y &&
+                    platforms.at(i)->get_fixture().maximum.x - creatures.at(0)->getData().get_velocity_x() + creatures.at(0)->getJumpWidth(
+                    platforms.at(i)->get_fixture().minimum.y - platforms.at(j)->get_fixture().minimum.y, NPC_JUMP_FORCE) >= platforms.at(j)->get_fixture().minimum.x)
+                        possible_transitions.at(i).push_back(j);
+                    else continue;
+                }
+                else
+                {
+                    if(platforms.at(i)->get_fixture().minimum.y - creatures.at(0)->getMaxJumpHeight(NPC_JUMP_FORCE) <= platforms.at(j)->get_fixture().minimum.y)
+                        possible_transitions.at(i).push_back(j);
+                    else continue;
+                }
+            }
+            else if(platforms.at(i)->get_fixture().maximum.y < platforms.at(j)->get_fixture().minimum.y)
+            {
+                if(platforms.at(i)->get_fixture().minimum < platforms.at(j)->get_fixture().minimum)
+                {
+                    if(platforms.at(i)->get_fixture().maximum.x - creatures.at(0)->getData().get_velocity_x() +
+                    creatures.at(0)->getJumpWidth(platforms.at(j)->get_fixture().minimum.y - platforms.at(i)->get_fixture().minimum.y, NPC_JUMP_FORCE) <=
+                    platforms.at(j)->get_fixture().maximum.x - creatures.at(0)->getData().get_velocity_x())
+                        possible_transitions.at(i).push_back(j);
+                    else continue;
+                }
+                else if(platforms.at(i)->get_fixture().maximum > platforms.at(j)->get_fixture().minimum)
+                {
+                    if(platforms.at(i)->get_fixture().minimum.x + creatures.at(0)->getData().get_velocity_x() +
+                    creatures.at(0)->getJumpWidth(platforms.at(j)->get_fixture().minimum.y - platforms.at(i)->get_fixture().minimum.y, NPC_JUMP_FORCE) <=
+                    platforms.at(j)->get_fixture().maximum.x - creatures.at(0)->getData().get_velocity_x())
+                        possible_transitions.at(i).push_back(j);
+                    else continue;
+                }
+                else continue;
+            }
+            else
+            {
+                if(platforms.at(i)->get_fixture().minimum < platforms.at(j)->get_fixture().minimum)
+                {
+                    if(platforms.at(i)->get_fixture().maximum.x - creatures.at(0)->getData().get_velocity_x() +
+                    creatures.at(0)->getJumpWidth(creatures.at(0)->getMaxJumpHeight(NPC_JUMP_FORCE), NPC_JUMP_FORCE)  <=
+                    platforms.at(j)->get_fixture().maximum.x - creatures.at(0)->getData().get_velocity_x())
+                        possible_transitions.at(i).push_back(j);
+                    else continue;
+                }
+                else if(platforms.at(i)->get_fixture().maximum > platforms.at(j)->get_fixture().maximum)
+                {
+                    if(platforms.at(i)->get_fixture().minimum.x + creatures.at(0)->getData().get_velocity_x() +
+                    creatures.at(0)->getJumpWidth(creatures.at(0)->getMaxJumpHeight(NPC_JUMP_FORCE), NPC_JUMP_FORCE) <=
+                    platforms.at(j)->get_fixture().maximum.x - creatures.at(0)->getData().get_velocity_x())
+                        possible_transitions.at(i).push_back(j);
+                    else continue;
+                }
+                else possible_transitions.at(i).push_back(j);
+            }
+        }
+    }
 }
 
 void Level::addBlocks(Blocks b) { blocks.push_back(b); }
