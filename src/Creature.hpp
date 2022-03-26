@@ -19,7 +19,8 @@ enum class Direction
 
 enum class ATypes
 {
-    Stay,
+    StayRight,
+    StayLeft,
     GRight,
     GLeft,
     Jump,
@@ -81,13 +82,13 @@ public:
 Creature::Creature(Data _data) :
     animations(), data(_data), direction(Direction::None),
     condition(Condition::None), slide_state(Sliding::None),
-    last_animation(ATypes::Stay) {}
+    last_animation(ATypes::StayRight) {}
 
 Creature::Creature( std::map < ATypes, std::pair < Animation, AABB > > _animations,
                     Data _data, Direction _direction, Condition _condition) :
     animations(_animations), data(_data),
     direction(_direction), condition(_condition),
-    slide_state(Sliding::None), last_animation(ATypes::Stay) {}
+    slide_state(Sliding::None), last_animation(ATypes::StayRight) {}
 
 void Creature::updateFixture( ATypes false_animation, ATypes true_animation)
 {

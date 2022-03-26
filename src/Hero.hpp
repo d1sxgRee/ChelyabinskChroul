@@ -41,7 +41,8 @@ void Hero::update(std::vector < Platform* > platforms, std::vector < Creature* >
     }
     else
     {
-        animations.at(ATypes::Stay).first.update(animations.at(ATypes::Stay).second);
+        animations.at(ATypes::StayRight).first.update(animations.at(ATypes::StayRight).second);
+        setLastAnimation(ATypes::StayRight);
     }
     updateAllFixtures();
     updateCondition(platforms);
