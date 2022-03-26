@@ -7,21 +7,22 @@
 #include "Globals.hpp"
 #include "Platform.hpp"
 #include "Creature.hpp"
+#include "NPC.hpp"
 #include "Blocks.hpp"
 
 class Level
 {
 private:
-    std::vector < Creature* > creatures; // вектор НИПов
+    std::vector < NPC* > creatures; // вектор НИПов
     std::vector < Platform* > platforms; // платформы чтобы прыгать
     std::vector < Blocks > blocks;
 
     std::vector < std::vector < size_t > > possible_transitions;
 public:
-    Level(std::vector < Creature* > _creatures, std::vector < Platform* > _platforms, std::vector < Blocks > _blocks);
+    Level(std::vector < NPC* > _creatures, std::vector < Platform* > _platforms, std::vector < Blocks > _blocks);
     void addBlocks(Blocks b);
     void addPlatform(Platform* p);
-    void addCreature(Creature* c);
+    void addCreature(NPC* npc);
     void deleteBlocks(size_t index);
     void deletePlatform(size_t index);
     void deleteCreature(size_t index);
@@ -30,7 +31,7 @@ public:
     void update();
 };
 
-Level::Level(std::vector < Creature* > _creatures, std::vector < Platform* > _platforms, std::vector < Blocks > _blocks) :
+Level::Level(std::vector < NPC* > _creatures, std::vector < Platform* > _platforms, std::vector < Blocks > _blocks) :
     creatures(_creatures), platforms(_platforms), blocks(_blocks), possible_transitions()
 {
     possible_transitions.reserve(0);
@@ -115,11 +116,9 @@ void Level::addBlocks(Blocks b) { blocks.push_back(b); }
 
 void Level::addPlatform(Platform* p) { platforms.push_back(p); }
 
-void Level::addCreature(Creature* c)
+void Level::addCreature(NPC* npc)
 {
-    if(typeid(c).name() == "class Hero *")
-        return;
-    creatures.push_back(c);
+    creatures.push_back(npc);
 }
 
 void Level::deleteBlocks(size_t index)
@@ -142,7 +141,13 @@ void Level::deleteCreature(size_t index)
 
 std::vector < Platform* > Level::getPlatforms() { return platforms; }
 
-std::vector < Creature* > Level::getCreatures() { return creatures; }
+std::vector < Creature* > Level::getCreatures()
+{
+    std::vector < Creature* > rvec;
+    for(auto el: creatures)
+        rvec.push_back(static_cast < Creature* > (el));
+    return rvec;
+}
 
 void Level::update()
 {
@@ -151,7 +156,7 @@ void Level::update()
     for(auto bl: blocks)
         bl.draw(0);
     for(size_t i = 0; i < creatures.size(); i++)
-        creatures.at(i)->update(platforms, creatures);
+        creatures.at(i)->update(platforms, possible_transitions);
 }
 
 #endif
