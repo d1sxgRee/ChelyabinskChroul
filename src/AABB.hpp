@@ -57,6 +57,7 @@ bool AABB::collideWithFixture(const AABB& a)
 bool AABB::collideWithCircle(const Circle& c)
 {
     assert(c.radius >= 0);
+
     if(c.center.y < minimum.y)
     {
         if(c.center.x < minimum.x)
@@ -67,6 +68,7 @@ bool AABB::collideWithCircle(const Circle& c)
             (c.center.y - minimum.y) * (c.center.y - minimum.y)) <= c.radius * c.radius;
         return minimum.y - c.center.y <= c.radius;
     }
+
     if(c.center.y > maximum.y)
     {
         if(c.center.x < minimum.x)
@@ -80,8 +82,10 @@ bool AABB::collideWithCircle(const Circle& c)
 
     if(c.center.x < minimum.x)
         return minimum.x - c.center.x <= c.radius;
+
     if(c.center.x > maximum.x)
         return c.center.x - maximum.x <= c.radius;
+        
     return true;
 }
 
