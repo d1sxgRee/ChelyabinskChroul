@@ -23,7 +23,8 @@ enum class ATypes
     StayLeft,
     GRight,
     GLeft,
-    Jump,
+    JRight,
+    JLeft,
     FreeFall,
     SRight,
     SLeft,
@@ -198,37 +199,42 @@ void Creature::go(bool with_animation)
 
 void Creature::jump(double jump_force)
 {
+    ATypes Jump;
+    if(direction == Direction::Right)
+            Jump = ATypes::JRight;
+    else if(direction == Direction::Left)
+            Jump = Atypes::JLeft;
     if(condition == Condition::OnPlatform)
     {
         data.set_velocity_y(jump_force);
-        animations.at(ATypes::Jump).second.minimum.y -= data.get_velocity_y();
-        animations.at(ATypes::Jump).second.maximum.y -= data.get_velocity_y();
+        animations.at(Jump).second.minimum.y -= data.get_velocity_y();
+        animations.at(Jump).second.maximum.y -= data.get_velocity_y();
         go(false);
         if(direction == Direction::Right)
-            updateFixture(ATypes::Jump, ATypes::GRight);
+            updateFixture(Jump, ATypes::GRight);
         else if(direction == Direction::Left)
-            updateFixture(ATypes::Jump, ATypes::GLeft);
-        animations.at(ATypes::Jump).first.update(animations.at(ATypes::Jump).second);
-        setLastAnimation(ATypes::Jump);
+            updateFixture(Jump, ATypes::GLeft);
+        animations.at(Jump).first.update(animations.at(Jump).second);
+        setLastAnimation(Jump);
     }
     else
     {
-        animations.at(ATypes::Jump).second.minimum.y -= data.get_velocity_y();
-        animations.at(ATypes::Jump).second.maximum.y -= data.get_velocity_y();
+        animations.at(Jump).second.minimum.y -= data.get_velocity_y();
+        animations.at(Jump).second.maximum.y -= data.get_velocity_y();
         data.set_velocity_y(data.get_velocity_y() - gravity);
         go(false);
         if(direction == Direction::Right)
-            updateFixture(ATypes::Jump, ATypes::GRight);
+            updateFixture(Jump, ATypes::GRight);
         else if(direction == Direction::Left)
-            updateFixture(ATypes::Jump, ATypes::GLeft);
+            updateFixture(Jump, ATypes::GLeft);
         if(condition == Condition::InJump)
         {
-            animations.at(ATypes::Jump).first.update(animations.at(ATypes::Jump).second);
-            setLastAnimation(ATypes::Jump);
+            animations.at(Jump).first.update(animations.at(Jump).second);
+            setLastAnimation(Jump);
         }
         else
         {
-            animations.at(ATypes::FreeFall).first.update(animations.at(ATypes::Jump).second);
+            animations.at(ATypes::FreeFall).first.update(animations.at(Jump).second);
             setLastAnimation(ATypes::FreeFall);
         }
     }
