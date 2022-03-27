@@ -254,8 +254,8 @@ void Creature::slide()
             break;
         case Direction::Left:
             slide_state = Sliding::InSlide;
-            animations.at(ATypes::SLeft).second.minimum.x += data.get_velocity_x() * 2;
-            animations.at(ATypes::SLeft).second.maximum.x += data.get_velocity_x() * 2;
+            animations.at(ATypes::SLeft).second.minimum.x -= data.get_velocity_x() * 2;
+            animations.at(ATypes::SLeft).second.maximum.x -= data.get_velocity_x() * 2;
             animations.at(ATypes::SLeft).first.update(animations.at(ATypes::SLeft).second);
             if(animations.at(ATypes::SLeft).first.isEnd())
                 slide_state = Sliding::None;
