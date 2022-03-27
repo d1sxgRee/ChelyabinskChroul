@@ -66,7 +66,7 @@ bool AABB::collideWithCircle(const Circle& c)
         if(c.center.x > maximum.x)
             return ((c.center.x - maximum.x) * (c.center.x - maximum.x) +
             (c.center.y - minimum.y) * (c.center.y - minimum.y)) <= c.radius * c.radius;
-        return std::abs(minimum.y - c.center.y <= c.radius);
+        return std::abs(minimum.y - c.center.y) <= c.radius;
     }
 
     if(c.center.y > maximum.y)
@@ -77,14 +77,14 @@ bool AABB::collideWithCircle(const Circle& c)
         if(c.center.x > maximum.x)
           return ((c.center.x - maximum.x) * (c.center.x - maximum.x) +
           (c.center.y - maximum.y) * (c.center.y - maximum.y)) <= c.radius * c.radius;
-        return std::abs(c.center.y - maximum.y <= c.radius);
+        return std::abs(c.center.y - maximum.y) <= c.radius;
     }
 
     if(c.center.x < minimum.x)
-        return std::abs(minimum.x - c.center.x <= c.radius);
+        return std::abs(minimum.x - c.center.x) <= c.radius;
 
     if(c.center.x > maximum.x)
-        return std::abs(c.center.x - maximum.x <= c.radius);
+        return std::abs(c.center.x - maximum.x) <= c.radius;
 
     return true;
 }
