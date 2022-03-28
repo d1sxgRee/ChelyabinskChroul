@@ -23,8 +23,7 @@ enum class ATypes
     StayLeft,
     GRight,
     GLeft,
-    JRight,
-    JLeft,
+    Jump,
     FreeFall,
     SRight,
     SLeft,
@@ -199,42 +198,37 @@ void Creature::go(bool with_animation)
 
 void Creature::jump(double jump_force)
 {
-    ATypes Jump;
-    if(direction == Direction::Right)
-            Jump = ATypes::JRight;
-    else if(direction == Direction::Left)
-            Jump = Atypes::JLeft;
     if(condition == Condition::OnPlatform)
     {
         data.set_velocity_y(jump_force);
-        animations.at(Jump).second.minimum.y -= data.get_velocity_y();
-        animations.at(Jump).second.maximum.y -= data.get_velocity_y();
+        animations.at(ATypes::Jump).second.minimum.y -= data.get_velocity_y();
+        animations.at(ATypes::Jump).second.maximum.y -= data.get_velocity_y();
         go(false);
         if(direction == Direction::Right)
-            updateFixture(Jump, ATypes::GRight);
+            updateFixture(ATypes::Jump, ATypes::GRight);
         else if(direction == Direction::Left)
-            updateFixture(Jump, ATypes::GLeft);
-        animations.at(Jump).first.update(animations.at(Jump).second);
-        setLastAnimation(Jump);
+            updateFixture(ATypes::Jump, ATypes::GLeft);
+        animations.at(ATypes::Jump).first.update(animations.at(ATypes::Jump).second);
+        setLastAnimation(ATypes::Jump);
     }
     else
     {
-        animations.at(Jump).second.minimum.y -= data.get_velocity_y();
-        animations.at(Jump).second.maximum.y -= data.get_velocity_y();
+        animations.at(ATypes::Jump).second.minimum.y -= data.get_velocity_y();
+        animations.at(ATypes::Jump).second.maximum.y -= data.get_velocity_y();
         data.set_velocity_y(data.get_velocity_y() - gravity);
         go(false);
         if(direction == Direction::Right)
-            updateFixture(Jump, ATypes::GRight);
+            updateFixture(ATypes::Jump, ATypes::GRight);
         else if(direction == Direction::Left)
-            updateFixture(Jump, ATypes::GLeft);
+            updateFixture(ATypes::Jump, ATypes::GLeft);
         if(condition == Condition::InJump)
         {
-            animations.at(Jump).first.update(animations.at(Jump).second);
-            setLastAnimation(Jump);
+            animations.at(ATypes::Jump).first.update(animations.at(ATypes::Jump).second);
+            setLastAnimation(ATypes::Jump);
         }
         else
         {
-            animations.at(ATypes::FreeFall).first.update(animations.at(Jump).second);
+            animations.at(ATypes::FreeFall).first.update(animations.at(ATypes::Jump).second);
             setLastAnimation(ATypes::FreeFall);
         }
     }
@@ -254,8 +248,8 @@ void Creature::slide()
             break;
         case Direction::Left:
             slide_state = Sliding::InSlide;
-            animations.at(ATypes::SLeft).second.minimum.x -= data.get_velocity_x() * 2;
-            animations.at(ATypes::SLeft).second.maximum.x -= data.get_velocity_x() * 2;
+            animations.at(ATypes::SLeft).second.minimum.x += data.get_velocity_x() * 2;
+            animations.at(ATypes::SLeft).second.maximum.x += data.get_velocity_x() * 2;
             animations.at(ATypes::SLeft).first.update(animations.at(ATypes::SLeft).second);
             if(animations.at(ATypes::SLeft).first.isEnd())
                 slide_state = Sliding::None;

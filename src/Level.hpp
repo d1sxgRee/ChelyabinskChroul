@@ -28,7 +28,7 @@ public:
     void deleteCreature(size_t index);
     std::vector < Platform* > getPlatforms();
     std::vector < Creature* > getCreatures();
-    void update();
+    void update(Hero& hero);
 };
 
 Level::Level(std::vector < NPC* > _creatures, std::vector < Platform* > _platforms, std::vector < Blocks > _blocks) :
@@ -149,14 +149,14 @@ std::vector < Creature* > Level::getCreatures()
     return rvec;
 }
 
-void Level::update()
+void Level::update(Hero& hero)
 {
     for(auto pl: platforms)
         pl->draw();
     for(auto bl: blocks)
         bl.draw(0);
     for(size_t i = 0; i < creatures.size(); i++)
-        creatures.at(i)->update(platforms, possible_transitions);
+        creatures.at(i)->update(hero, platforms, possible_transitions);
 }
 
 #endif

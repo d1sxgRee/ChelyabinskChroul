@@ -4,12 +4,6 @@
 #include "Creature.hpp"
 #include "Hero.hpp"
 
-struct Circle
-{
-    Coords center;
-    double radius;
-};
-
 enum class Command
 {
     StayLeft,
@@ -37,16 +31,17 @@ enum class State
 
 class NPC : public Creature
 {
-    private:
-        Circle interaction_circle;
-        State npc_state;
-        bool hero_visibility;
+private:
+    Circle interaction_circle;
+    State npc_state;
+    bool hero_visibility;
 
-        std::map < State, std::vector < Command > > pallete;
-    public:
-        NPC (std::map < ATypes, std::pair < Animation, AABB > >, Data, Direction, Condition, Circle);
-        void addCommands (std::vector < Platform* >, std::vector < std::vector < size_t > >);
-        void update (std::vector < Platform* >, std::vector < std::vector < size_t > >);
+    std::map < State, std::vector < Command > > pallete;
+public:
+    NPC (std::map < ATypes, std::pair < Animation, AABB > >, Data, Direction, Condition, Circle);
+    void updateState(Hero& hero);
+    void addCommands (Hero&, std::vector < Platform* >, std::vector < std::vector < size_t > >);
+    void update (Hero&, std::vector < Platform* >, std::vector < std::vector < size_t > >);
 };
 
 NPC::NPC (std::map < ATypes, std::pair < Animation, AABB > > _animations, Data _data,
@@ -56,7 +51,32 @@ NPC::NPC (std::map < ATypes, std::pair < Animation, AABB > > _animations, Data _
 {
 }
 
-void NPC::addCommands (std::vector < Platform* > platforms, std::vector < std::vector < size_t > > possible_transitions)
+void NPC::updateState(Hero& hero)
+{
+    if(hero.getFixture(Hero.getLastAnimation()).collideWithFCircle(interaction_circle))
+    {
+        if(hero_visibility)
+        {
+            if(data.get_health_points() > NPC_MAX_HP * 0.2)
+                npc_state = State::Attacking;
+            else
+                npc_state = State::Fleeing;
+        }
+        else
+            npc_state = State::Searching;
+    }
+    else
+    {
+        if(data.get_health_points() > NPC_MAX_HP * 0.5)
+            npc_state = State::Patrooling;
+        else if(data.get_health_points() > NPC_MAX_HP * 0.2)
+            npc_state = State::Idling;
+        else
+            npc_state = State::FullApathy;
+    }
+}
+
+void NPC::addCommands (Hero& hero, std::vector < Platform* > platforms, std::vector < std::vector < size_t > > possible_transitions)
 {
     int this_platform_number = -1;
 
@@ -135,6 +155,15 @@ void NPC::addCommands (std::vector < Platform* > platforms, std::vector < std::v
 
 
     }
+
+    else if(npc_state == State::Attacking)
+    {
+    }
+
+    else if(npc_state == State::Fleeing)
+    {
+    }
+
     else if (npc_state == State::Idling)
     {
         size_t rndcommand = rand() % 12;
@@ -150,6 +179,7 @@ void NPC::addCommands (std::vector < Platform* > platforms, std::vector < std::v
         else
             pallete.at (State::Idling).push_back (Command::StayRight);
     }
+
     else if (npc_state == State::FullApathy)
     {
         size_t rndcommand = rand() % 10;
@@ -169,76 +199,80 @@ void NPC::addCommands (std::vector < Platform* > platforms, std::vector < std::v
         else
             pallete.at (State::FullApathy).push_back (Command::StayLeft);
     }
+
+    else if(npc_state == State::Searching)
+    {
+    }
+
 }
 
-void NPC::update (std::vector < Platform* > platforms, std::vector < std::vector < size_t > > possible_transitions)
+void NPC::update (Hero& hero, std::vector < Platform* > platforms, std::vector < std::vector < size_t > > possible_transitions)
 {
+    static size_t it = 0;
     clock_t start = clock();
-    addCommands (platforms, possible_transitions);
+    State last_state = npc_state;
+    updateState (hero);
+    if(last_state != npc_state)
+        it = 0;
+    addCommands (hero, platforms, possible_transitions);
 
-    for (auto el : pallete)
+    Command command = pallete.at(npc_state).at(it);
+    if (command == Command::StayRight)
     {
-        if (el.first == npc_state)
-        {
-            for (auto command : el.second)
-            {
-                if (command == Command::StayRight)
-                {
-                    animations.at (ATypes::StayRight).first.update (animations.at (ATypes::StayRight).second);
-                }
-                else if (command == Command::StayLeft)
-                {
-                    animations.at (ATypes::StayLeft).first.update (animations.at (ATypes::StayLeft).second);
-                }
-                else if (command == Command::StepRight && condition == Condition::OnPlatform)
-                {
-                    setDirection (Direction::Right);
-                    go (true);
-                }
-                else if (command == Command::StepLeft && condition == Condition::OnPlatform)
-                {
-                    setDirection (Direction::Left);
-                    go (true);
-                }
-                else if (command == Command::AttackRight && condition == Condition::OnPlatform)
-                {
-                }
-                else if (command == Command::AttackLeft && condition == Condition::OnPlatform)
-                {
-                }
-                else if (command == Command::JumpRight || (condition != Condition::OnPlatform && direction == Direction::Right))
-                {
-                    setDirection (Direction::Right);
-                    jump (NPC_JUMP_FORCE);
-                }
-                else if (command == Command::JumpLeft || (condition != Condition::OnPlatform && direction == Direction::Left))
-                {
-                    setDirection (Direction::Left);
-                    jump (NPC_JUMP_FORCE);
-                }
-                else if (command == Command::JumpNone || (condition != Condition::OnPlatform && direction == Direction::None))
-                {
-                    setDirection (Direction::None);
-                    jump (NPC_JUMP_FORCE);
-                }
-                else if (command == Command::SlideRight || (condition == Condition::OnPlatform &&
-                         slide_state == Sliding::InSlide && direction == Direction::Right))
-                {
-                    setDirection (Direction::Right);
-                    slide();
-                }
-                else if (command == Command::SlideLeft || (condition == Condition::OnPlatform &&
-                         slide_state == Sliding::InSlide && direction == Direction::Right))
-                {
-                    setDirection (Direction::Left);
-                    slide();
-                }
-
-                updateAllFixtures();
-                updateCondition (platforms);
-            }
-        }
+        animations.at (ATypes::StayRight).first.update (animations.at (ATypes::StayRight).second);
     }
+    else if (command == Command::StayLeft)
+    {
+        animations.at (ATypes::StayLeft).first.update (animations.at (ATypes::StayLeft).second);
+    }
+    else if (command == Command::StepRight && condition == Condition::OnPlatform)
+    {
+        setDirection (Direction::Right);
+        go (true);
+    }
+    else if (command == Command::StepLeft && condition == Condition::OnPlatform)
+    {
+        setDirection (Direction::Left);
+        go (true);
+    }
+    else if (command == Command::AttackRight && condition == Condition::OnPlatform)
+    {
+
+    }
+    else if (command == Command::AttackLeft && condition == Condition::OnPlatform)
+    {
+    }
+    else if (command == Command::JumpRight || (condition != Condition::OnPlatform && direction == Direction::Right))
+    {
+        setDirection (Direction::Right);
+        jump (NPC_JUMP_FORCE);
+    }
+    else if (command == Command::JumpLeft || (condition != Condition::OnPlatform && direction == Direction::Left))
+    {
+        setDirection (Direction::Left);
+        jump (NPC_JUMP_FORCE);
+    }
+    else if (command == Command::JumpNone || (condition != Condition::OnPlatform && direction == Direction::None))
+    {
+        setDirection (Direction::None);
+        jump (NPC_JUMP_FORCE);
+    }
+    else if (command == Command::SlideRight || (condition == Condition::OnPlatform &&
+             slide_state == Sliding::InSlide && direction == Direction::Right))
+    {
+        setDirection (Direction::Right);
+        slide();
+    }
+    else if (command == Command::SlideLeft || (condition == Condition::OnPlatform &&
+             slide_state == Sliding::InSlide && direction == Direction::Right))
+    {
+        setDirection (Direction::Left);
+        slide();
+    }
+
+    updateAllFixtures();
+    updateCondition (platforms);
+    it++;
 }
 
 
