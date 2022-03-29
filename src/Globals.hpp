@@ -8,6 +8,10 @@
 inline void screen_update(int ms_sleep_time);
 inline void pause_if(int vkey);
 
+const unsigned short WindowX = 1500;                /*Window OX axis length*/
+const unsigned short WindowY = 700;                 /*Window OY axis length*/
+const unsigned short WindowR = WindowX / WindowY;   /*Window OX / OY lengths ratio*/
+
 const double gravity = 9.81;
 
 const unsigned sleep_time = 10;
@@ -28,9 +32,7 @@ const int AKEY = int(VK_LBUTTON);                       /*The button responsible
 const int EXIT = int(VK_ESCAPE);                        /*The button responsible for exit*/
 const int PKEY = int('Q');                              /*The button responsible for game pausing*/
 
-const unsigned short WindowX = 1500;                /*Window OX axis length*/
-const unsigned short WindowY = 700;                 /*Window OY axis length*/
-const unsigned short WindowR = WindowX / WindowY;   /*Window OX / OY lengths ratio*/
+const size_t NPC_MAX_HP = 100;
 
 inline void screen_update(int ms_sleep_time)
 {
