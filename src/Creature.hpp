@@ -19,12 +19,14 @@ enum class Direction
 
 enum class ATypes
 {
-    Stay,
+    StayRight,
+    StayLeft,
     GRight,
     GLeft,
     Jump,
     FreeFall,
-    Slide,
+    SRight,
+    SLeft,
     Parry,
     ARight,
     ALeft
@@ -38,6 +40,12 @@ enum class Condition
     OnPlatform
 };
 
+enum class Sliding
+{
+    None,
+    InSlide
+};
+
 class Creature
 {
 protected:
@@ -45,6 +53,7 @@ protected:
     Data data;
     Direction direction;
     Condition condition;
+    Sliding slide_state;
 
     ATypes last_animation;
 
@@ -52,6 +61,7 @@ protected:
     Creature(std::map < ATypes, std::pair < Animation, AABB > >, Data, Direction, Condition);
     virtual ~Creature() = default;
 public:
+    void updateFixture(ATypes, ATypes);
     void updateAllFixtures();
     void updateCondition(std::vector < Platform* >);
     void setDirection(Direction);
@@ -60,7 +70,7 @@ public:
     void attack(std::vector < Creature* >);
     void go(bool);
     void jump(double jump_force);
-    virtual void update(std::vector < Platform* >, std::vector < Creature* >) = 0;
+    void slide();
     double getMaxJumpHeight(double);
     double getJumpWidth(double, double);
     Condition getCondition();
@@ -72,13 +82,21 @@ public:
 
 Creature::Creature(Data _data) :
     animations(), data(_data), direction(Direction::None),
-    condition(Condition::None), last_animation(ATypes::Stay) {}
+    condition(Condition::None), slide_state(Sliding::None),
+    last_animation(ATypes::StayRight) {}
 
 Creature::Creature( std::map < ATypes, std::pair < Animation, AABB > > _animations,
                     Data _data, Direction _direction, Condition _condition) :
     animations(_animations), data(_data),
     direction(_direction), condition(_condition),
-    last_animation(ATypes::Stay) {}
+    slide_state(Sliding::None), last_animation(ATypes::StayRight) {}
+
+void Creature::updateFixture( ATypes false_animation, ATypes true_animation)
+{
+    animations.at(false_animation).second = {animations.at(true_animation).second.minimum,
+    Coords(animations.at(true_animation).second.minimum +
+    (animations.at(false_animation).second.maximum - animations.at(false_animation).second.minimum))};
+}
 
 void Creature::updateAllFixtures()
 {
@@ -118,6 +136,10 @@ void Creature::setLastAnimation(ATypes animation_type) { last_animation = animat
 void Creature::attack(std::vector < Creature* > creatures)
 {
     go(false);
+    if(direction == Direction::Right)
+        updateFixture(ATypes::ARight, ATypes::GRight);
+    else if(direction == Direction::Left)
+        updateFixture(ATypes::ALeft, ATypes::GLeft);
     switch(direction)
     {
         case Direction::Right:
@@ -180,18 +202,26 @@ void Creature::jump(double jump_force)
     if(condition == Condition::OnPlatform)
     {
         data.set_velocity_y(jump_force);
-        animations.at(ATypes::GRight).second.minimum.y -= data.get_velocity_y();
-        animations.at(ATypes::GRight).second.maximum.y -= data.get_velocity_y();
+        animations.at(ATypes::Jump).second.minimum.y -= data.get_velocity_y();
+        animations.at(ATypes::Jump).second.maximum.y -= data.get_velocity_y();
         go(false);
+        if(direction == Direction::Right)
+            updateFixture(ATypes::Jump, ATypes::GRight);
+        else if(direction == Direction::Left)
+            updateFixture(ATypes::Jump, ATypes::GLeft);
         animations.at(ATypes::Jump).first.update(animations.at(ATypes::Jump).second);
         setLastAnimation(ATypes::Jump);
     }
     else
     {
-        animations.at(ATypes::GRight).second.minimum.y -= data.get_velocity_y();
-        animations.at(ATypes::GRight).second.maximum.y -= data.get_velocity_y();
+        animations.at(ATypes::Jump).second.minimum.y -= data.get_velocity_y();
+        animations.at(ATypes::Jump).second.maximum.y -= data.get_velocity_y();
         data.set_velocity_y(data.get_velocity_y() - gravity);
         go(false);
+        if(direction == Direction::Right)
+            updateFixture(ATypes::Jump, ATypes::GRight);
+        else if(direction == Direction::Left)
+            updateFixture(ATypes::Jump, ATypes::GLeft);
         if(condition == Condition::InJump)
         {
             animations.at(ATypes::Jump).first.update(animations.at(ATypes::Jump).second);
@@ -202,6 +232,31 @@ void Creature::jump(double jump_force)
             animations.at(ATypes::FreeFall).first.update(animations.at(ATypes::Jump).second);
             setLastAnimation(ATypes::FreeFall);
         }
+    }
+}
+
+void Creature::slide()
+{
+    switch(direction)
+    {
+        case Direction::Right:
+            slide_state = Sliding::InSlide;
+            animations.at(ATypes::SRight).second.minimum.x += data.get_velocity_x() * 2;
+            animations.at(ATypes::SRight).second.maximum.x += data.get_velocity_x() * 2;
+            animations.at(ATypes::SRight).first.update(animations.at(ATypes::SRight).second);
+            if(animations.at(ATypes::SRight).first.isEnd())
+                slide_state = Sliding::None;
+            break;
+        case Direction::Left:
+            slide_state = Sliding::InSlide;
+            animations.at(ATypes::SLeft).second.minimum.x += data.get_velocity_x() * 2;
+            animations.at(ATypes::SLeft).second.maximum.x += data.get_velocity_x() * 2;
+            animations.at(ATypes::SLeft).first.update(animations.at(ATypes::SLeft).second);
+            if(animations.at(ATypes::SLeft).first.isEnd())
+                slide_state = Sliding::None;
+            break;
+        case Direction::None: break;
+        default: break;
     }
 }
 
