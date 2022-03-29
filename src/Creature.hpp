@@ -29,7 +29,9 @@ enum class ATypes
     SLeft,
     Parry,
     ARight,
-    ALeft
+    ALeft,
+    HurtRight,
+    HurtLeft
 };
 
 enum class Condition
