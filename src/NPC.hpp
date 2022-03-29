@@ -29,25 +29,33 @@ enum class State
     Searching
 };
 
+enum class NPC_type
+{
+    Brawler,
+    Sniper
+}
+
 class NPC : public Creature
 {
 private:
+    Bullet bullet;
     Circle interaction_circle;
     State npc_state;
+    NPC_type npc_type;
     bool hero_visibility;
 
     std::map < State, std::vector < Command > > pallete;
 public:
-    NPC (std::map < ATypes, std::pair < Animation, AABB > >, Data, Direction, Condition, Circle);
+    NPC (std::map < ATypes, std::pair < Animation, AABB > >, Data, Direction, Condition, Bullet, Circle, NPC_type);
     void updateState(Hero& hero);
     void addCommands (Hero&, std::vector < Platform* >, std::vector < std::vector < size_t > >);
     void update (Hero&, std::vector < Platform* >, std::vector < std::vector < size_t > >);
 };
 
 NPC::NPC (std::map < ATypes, std::pair < Animation, AABB > > _animations, Data _data,
-          Direction _direction, Condition _condition, Circle _interaction_circle) :
-    Creature (_animations, _data, _direction, _condition), interaction_circle (_interaction_circle),
-    npc_state (State::Idling), hero_visibility (false), pallete()
+          Direction _direction, Condition _condition, Bullet _bullet, Circle _interaction_circle, NPC_type _npc_type) :
+    Creature (_animations, _data, _direction, _condition), bullet(_bullet), interaction_circle (_interaction_circle),
+    npc_type(_npc_type), npc_state (State::Idling), hero_visibility (false), pallete()
 {
 }
 
@@ -235,12 +243,22 @@ void NPC::update (Hero& hero, std::vector < Platform* > platforms, std::vector <
         setDirection (Direction::Left);
         go (true);
     }
-    else if (command == Command::AttackRight && condition == Condition::OnPlatform)
+    else if (command == Command::AttackRight && condition == Condition::OnPlatform && npc_type == NPC_type::Brawler)
     {
 
     }
-    else if (command == Command::AttackLeft && condition == Condition::OnPlatform)
+    else if (command == Command::AttackLeft && condition == Condition::OnPlatform && npc_type == NPC_type::Brawler)
     {
+    }
+    else if ((command == Command::AttackRight && condition == Condition::OnPlatform && npc_type == NPC_type::Sniper &&
+    (clock() - bullet.shot_time) / CLOCKS_PER_SEC >= bullet.data.attack_cooldown) || bullet.bcondition == BCondition::InFly )
+    {
+        bullet.shot(hero, *this);
+    }
+    else if ((command == Command::AttackLeft && condition == Condition::OnPlatform && npc_type == NPC_type::Sniper &&
+    (clock() - bullet.shot_time) / CLOCKS_PER_SEC >= bullet.data.attack_cooldown) || bullet.bcondition == BCondition::InFly )
+    {
+        bullet.shot(hero, *this);
     }
     else if (command == Command::JumpRight || (condition != Condition::OnPlatform && direction == Direction::Right))
     {
