@@ -2,6 +2,7 @@
 #define __ANIMATION_H__
 
 #include "TXLib.h"
+#include <cmath>
 
 const int start_x = 1;
 
@@ -26,6 +27,7 @@ public:
     unsigned getInLineSpriteNumber();
     double getSizeX();
     double getSizeY();
+    bool isEnd();
     void draw(AABB fixture);
     void draw(double x, double y);
     void update(AABB fixture);
@@ -61,6 +63,8 @@ unsigned Animation::getInLineSpriteNumber() { return static_cast < unsigned > (s
 double Animation::getSizeX() { return width * scaleX; }
 
 double Animation::getSizeY() { return height * scaleY; }
+
+bool Animation::isEnd() { return sprite_x >= endX - width; }
 
 void Animation::draw(AABB fixture)
 {

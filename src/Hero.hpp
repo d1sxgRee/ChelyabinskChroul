@@ -7,7 +7,7 @@ class Hero : public Creature
 {
 public:
     Hero(std::map < ATypes, std::pair < Animation, AABB > >, Data, Direction, Condition);
-    void update(std::vector < Platform* >, std::vector < Creature* >) override;
+    void update(std::vector < Platform* >, std::vector < Creature* >);
 };
 
 Hero::Hero(std::map < ATypes, std::pair < Animation, AABB > > _animations, Data _data, Direction _direction, Condition _condition) :
@@ -16,19 +16,20 @@ Hero::Hero(std::map < ATypes, std::pair < Animation, AABB > > _animations, Data 
 void Hero::update(std::vector < Platform* > platforms, std::vector < Creature* > creatures)
 {
     clock_t start = clock();
-    if(GetAsyncKeyState(RKEY))
+    if(GetAsyncKeyState(RKEY) && condition == Condition::OnPlatform)
     {
         setDirection(Direction::Right);
         go(true);
     }
-    else if(GetAsyncKeyState(LKEY))
+    else if(GetAsyncKeyState(LKEY) && condition == Condition::OnPlatform)
     {
         setDirection(Direction::Left);
         go(true);
     }
-    else if(GetAsyncKeyState(SKEY) && (clock() - start) / CLOCKS_PER_SEC >= slide_cooldown)
+    else if((GetAsyncKeyState(SKEY) && condition == Condition::OnPlatform &&
+    (clock() - start) / CLOCKS_PER_SEC >= slide_cooldown) || slide_state == Sliding::InSlide)
     {
-        /*slide*/
+        slide();
     }
     else if(GetAsyncKeyState(JUMP) || condition != Condition::OnPlatform)
     {
@@ -37,6 +38,11 @@ void Hero::update(std::vector < Platform* > platforms, std::vector < Creature* >
     else if(GetAsyncKeyState(AKEY) && (clock() - start) / CLOCKS_PER_SEC >= attack_cooldown)
     {
         attack(creatures);
+    }
+    else
+    {
+        animations.at(ATypes::StayRight).first.update(animations.at(ATypes::StayRight).second);
+        setLastAnimation(ATypes::StayRight);
     }
     updateAllFixtures();
     updateCondition(platforms);
