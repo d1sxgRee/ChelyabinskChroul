@@ -1,57 +1,47 @@
 #ifndef __MENU_H__
 #define __MENU_H__
 
-class Mouse
+#include "AABB.hpp"
+#include "Animation.hpp"
+
+class Button
 {
 private:
-    int x;
-    int y;
-    bool lmbclick;
-    bool check;
+    AABB fixture;
+    HDC play_image;
+    Animation one;
 public:
-    Mouse();
-    void mouseXYCLICK(Mouse* mt);
+
+    Button(AABB,HDC);
+    ~Button();
+    bool wasClicked();
+    void draw();
+    Animation& getAnimation();
 };
 
-void Mouse::mouseXYCLICK(Mouse* mt)
+Button::Button(AABB _fixture, HDC _play_image):
+    fixture(_fixture), play_image(_play_image),one(0, 0, 1075, 609, 1.0, 1.0, 0, 0,
+    play_image, TX_WHITE) {}
+
+Button::~Button()
 {
-    mt->x = txMouseX();
-    mt->y = txMouseY();
-    if(GetAsyncKeyState(VK_LBUTTON))
-    {
-        mt->lmbclick = true;
-    }
+    txDeleteDC(play_image);
 }
 
-class Menu
+bool Button::wasClicked()
 {
-private:
-    double sprite_x;
-    double sprite_y;
-    double width;
-    double height;
-    double scaleX;
-    double scaleY;
-    HDC image;
-    COLORREF color;
-public:
-    Menu(double _x, double _y, double _width, double _height, double _scaleX, double _scaleY, HDC _image,
-    COLORREF _color);
-    ~Menu();
-    void draw(double x,double y);
-};
-Menu::Menu(double _x, double _y, double _width, double _height, double _scaleX, double _scaleY):
-    sprite_x(_x), sprite_y(_y), width(_width), height(_height), scaleX(_scaleX), scaleY(_scaleY),
-    image(_image), color(_color)
-
-Menu::~Menu() { txDeleteDC(image); }
-
-Menu::draw(double x, double y)
-{
-    Win32::TransparentBlt (txDC(), static_cast < int > (x), static_cast < int > (y),
-    static_cast < int > (width*scaleX), static_cast < int > (height*scaleY),image,
-    static_cast < int > (sprite_x),
-    static_cast < int > (sprite_y), static_cast < int > (width),
-    static_cast < int > (height), color);
+    if(fixture.minimum.x < txMouseX() && fixture.maximum.x > txMouseX())
+        if(fixture.minimum.y < txMouseY() && fixture.maximum.y > txMouseY())
+            if(GetAsyncKeyState(VK_LBUTTON))
+                return true;
+    else return false;
 }
+
+void Button::draw()
+{
+    one.draw(fixture);
+}
+
+Animation& Button::getAnimation() { return one; }
+
 #endif //__MENU_H__
