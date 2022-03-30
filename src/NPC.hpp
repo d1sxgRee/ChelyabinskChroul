@@ -3,6 +3,9 @@
 
 #include "Creature.hpp"
 #include "Hero.hpp"
+#include "AABB.hpp"
+#include "Bullet.hpp"
+#include "Globals.hpp"
 
 enum class Command
 {
@@ -33,7 +36,8 @@ enum class NPC_type
 {
     Brawler,
     Sniper
-}
+};
+
 
 class NPC : public Creature
 {
@@ -55,13 +59,13 @@ public:
 NPC::NPC (std::map < ATypes, std::pair < Animation, AABB > > _animations, Data _data,
           Direction _direction, Condition _condition, Bullet _bullet, Circle _interaction_circle, NPC_type _npc_type) :
     Creature (_animations, _data, _direction, _condition), bullet(_bullet), interaction_circle (_interaction_circle),
-    npc_type(_npc_type), npc_state (State::Idling), hero_visibility (false), pallete()
+    npc_state (State::Idling), npc_type(_npc_type), hero_visibility (false), pallete()
 {
 }
 
 void NPC::updateState(Hero& hero)
 {
-    if(hero.getFixture(Hero.getLastAnimation()).collideWithFCircle(interaction_circle))
+    if(hero.getFixture(hero.getLastAnimation()).collideWithCircle(interaction_circle))
     {
         if(hero_visibility)
         {
@@ -251,14 +255,14 @@ void NPC::update (Hero& hero, std::vector < Platform* > platforms, std::vector <
     {
     }
     else if ((command == Command::AttackRight && condition == Condition::OnPlatform && npc_type == NPC_type::Sniper &&
-    (clock() - bullet.shot_time) / CLOCKS_PER_SEC >= bullet.data.attack_cooldown) || bullet.bcondition == BCondition::InFly )
+    (clock() - bullet.get_shot_time()) / CLOCKS_PER_SEC >= bullet.get_data().get_attack_cooldown()) || bullet.get_bcondition() == BCondition::InFly )
     {
-        bullet.shot(hero, *this);
+        bullet.shot(hero, getFixture(getLastAnimation()).minimum.x, getFixture(getLastAnimation()).maximum.x, getDirection());
     }
     else if ((command == Command::AttackLeft && condition == Condition::OnPlatform && npc_type == NPC_type::Sniper &&
-    (clock() - bullet.shot_time) / CLOCKS_PER_SEC >= bullet.data.attack_cooldown) || bullet.bcondition == BCondition::InFly )
+    (clock() - bullet.get_shot_time()) / CLOCKS_PER_SEC >= bullet.get_data().get_attack_cooldown()) || bullet.get_bcondition() == BCondition::InFly )
     {
-        bullet.shot(hero, *this);
+        bullet.shot(hero, getFixture(getLastAnimation()).minimum.x, getFixture(getLastAnimation()).maximum.x, getDirection());
     }
     else if (command == Command::JumpRight || (condition != Condition::OnPlatform && direction == Direction::Right))
     {
