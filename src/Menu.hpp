@@ -8,40 +8,69 @@ class Button
 {
 private:
     AABB fixture;
-    HDC play_image;
-    Animation one;
+    int new_y;
+    Animation button;
 public:
-
-    Button(AABB,HDC);
-    ~Button();
-    bool wasClicked();
+    Button(AABB, int, Animation);
+    ~Button() = default;
+    bool pushed();
     void draw();
-    Animation& getAnimation();
+    void update();
 };
 
-Button::Button(AABB _fixture, HDC _play_image):
-    fixture(_fixture), play_image(_play_image),one(0, 0, 1075, 609, 1.0, 1.0, 0, 0,
-    play_image, TX_WHITE) {}
+Button::Button(AABB _fixture, int _new_y, Animation _button):
+    fixture(_fixture), new_y(_new_y), button(_button) {}
 
-Button::~Button()
-{
-    txDeleteDC(play_image);
-}
-
-bool Button::wasClicked()
+bool Button::pushed()
 {
     if(fixture.minimum.x < txMouseX() && fixture.maximum.x > txMouseX())
         if(fixture.minimum.y < txMouseY() && fixture.maximum.y > txMouseY())
             if(GetAsyncKeyState(VK_LBUTTON))
                 return true;
-    else return false;
+    return false;
 }
 
 void Button::draw()
 {
-    one.draw(fixture);
+    button.draw(fixture);
 }
 
-Animation& Button::getAnimation() { return one; }
+void Button::update()
+{
+    if(pushed())
+        button.setY(new_y);
+    else button.setY(0);
+}
 
+///-----------------------------------------
+
+class Menu
+{
+private:
+    Button play;
+    Button info;
+    //Button exit;
+public:
+    Menu(Button, Button);
+    ~Menu() {};
+    void draw();
+    void update();
+};
+
+Menu::Menu(Button _play, Button _info):
+    play(_play), info(_info) {}
+
+void Menu::draw()
+{
+    play.draw();
+    info.draw();
+    //exit.draw();
+}
+
+void Menu::update()
+{
+    play.update();
+    info.update();
+    //exit.update();
+}
 #endif //__MENU_H__
