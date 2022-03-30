@@ -75,6 +75,7 @@ public:
     void slide();
     double getMaxJumpHeight(double);
     double getJumpWidth(double, double);
+    Direction getDirection();
     Condition getCondition();
     ATypes getLastAnimation();
     Data getData();
@@ -272,6 +273,11 @@ double Creature::getJumpWidth(double ydelta, double jump_force)
     if(ydelta < data.get_velocity_y())
         return data.get_velocity_x();
     return data.get_velocity_x() + getJumpWidth(ydelta - jump_force, jump_force - gravity);
+}
+
+Direction Creature::getDirection()
+{
+    return direction;
 }
 
 Condition Creature::getCondition()
